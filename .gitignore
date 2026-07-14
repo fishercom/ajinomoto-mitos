@@ -1,0 +1,26 @@
+# WordPress core files
+wp-config.php
+wp-config-sample.php
+wp-activate.php
+wp-admin/
+wp-includes/
+wp-content/uploads/
+wp-content/upgrade/
+wp-content/blogs.dir/
+wp-content/cache/
+wp-content/backups/
+
+# Theme uploads/backups
+*.log
+*.zip
+*.tar.gz
+
+# Local IDEs
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# OS specific files
+ehthumbs.db
+Icon?

@@ -1,0 +1,42 @@
+# Pipeline de compilación y empaquetado para Azure DevOps
+# Proyecto: Ajinomoto - Mitos del GMS y Cocina (Tema WordPress)
+
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  # Ruta del tema personalizado dentro del repositorio
+  themePath: 'wp-content/themes/ajinomoto-mitos'
+
+steps:
+- task: UsePhp@1
+  inputs:
+    version: '8.2'
+  displayName: 'Configurar PHP 8.2'
+
+# Ejecutar verificación de sintaxis de PHP para evitar desplegar archivos corruptos
+- script: |
+    echo "Iniciando validación de sintaxis PHP en los archivos del tema..."
+    find $(themePath) -name "*.php" -type f -print0 | xargs -0 -n 1 php -l
+  displayName: 'Prueba de Sintaxis PHP (PHP Lint)'
+
+# Comprimir el tema personalizado para el despliegue
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(themePath)'
+    includeRootFolder: true
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/ajinomoto-mitos-theme.zip'
+    replaceExistingArchive: true
+  displayName: 'Comprimir Tema Personalizado'
+
+# Publicar el archivo empaquetado como artefacto del pipeline
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/ajinomoto-mitos-theme.zip'
+    ArtifactName: 'wordpress-theme'
+    publishLocation: 'Container'
+  displayName: 'Publicar Artefacto de Compilación'
