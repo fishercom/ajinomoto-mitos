@@ -1,0 +1,134 @@
+{
+    "key": "group_revisores",
+    "title": "Campos de Revisor",
+    "fields": [
+        {
+            "key": "field_cargo_revisor",
+            "label": "Cargo del Revisor",
+            "name": "cargo_revisor",
+            "type": "text",
+            "instructions": "Ejemplo: Nutricionista-Dietista — CNP 4853",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_resumen_revisor",
+            "label": "Resumen Biográfico",
+            "name": "resumen_revisor",
+            "type": "textarea",
+            "instructions": "Breve descripción profesional del revisor.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "maxlength": "",
+            "rows": "",
+            "new_lines": ""
+        },
+        {
+            "key": "field_formacion_academica",
+            "label": "Formación Académica",
+            "name": "formacion_academica",
+            "type": "wysiwyg",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "tabs": "all",
+            "toolbar": "full",
+            "media_upload": 1,
+            "delay": 0
+        },
+        {
+            "key": "field_experiencia_profesional",
+            "label": "Experiencia Profesional",
+            "name": "experiencia_profesional",
+            "type": "wysiwyg",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "tabs": "all",
+            "toolbar": "full",
+            "media_upload": 1,
+            "delay": 0
+        },
+        {
+            "key": "field_premios_distinciones",
+            "label": "Premios y Distinciones",
+            "name": "premios_distinciones",
+            "type": "wysiwyg",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "tabs": "all",
+            "toolbar": "full",
+            "media_upload": 1,
+            "delay": 0
+        },
+        {
+            "key": "field_publicaciones",
+            "label": "Publicaciones",
+            "name": "publicaciones",
+            "type": "wysiwyg",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "tabs": "all",
+            "toolbar": "full",
+            "media_upload": 1,
+            "delay": 0
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "revisores"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0
+}

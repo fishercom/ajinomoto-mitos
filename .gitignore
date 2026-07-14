@@ -9,6 +9,7 @@ wp-content/upgrade/
 wp-content/blogs.dir/
 wp-content/cache/
 wp-content/backups/
+wp-content/plugins/
 
 # Theme uploads/backups
 *.log

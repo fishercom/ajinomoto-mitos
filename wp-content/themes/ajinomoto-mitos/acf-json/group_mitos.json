@@ -1,0 +1,160 @@
+{
+    "key": "group_mitos",
+    "title": "Campos de Mito",
+    "fields": [
+        {
+            "key": "field_subtitulo_mito",
+            "label": "Subtítulo del Mito",
+            "name": "subtitulo_mito",
+            "type": "text",
+            "instructions": "Título del mito mostrado en las páginas de detalle.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_realidad_corta",
+            "label": "Realidad Corta",
+            "name": "realidad_corta",
+            "type": "textarea",
+            "instructions": "Explicación corta o resumen de la realidad para banners y modales.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "maxlength": "",
+            "rows": "",
+            "new_lines": ""
+        },
+        {
+            "key": "field_sustento_cientifico",
+            "label": "Sustento Científico",
+            "name": "sustento_cientifico",
+            "type": "wysiwyg",
+            "instructions": "Texto detallado del sustento científico y técnico del mito.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "tabs": "all",
+            "toolbar": "full",
+            "media_upload": 1,
+            "delay": 0
+        },
+        {
+            "key": "field_perspectiva_nutricional",
+            "label": "Perspectiva Nutricional",
+            "name": "perspectiva_nutricional",
+            "type": "wysiwyg",
+            "instructions": "Detalle desde la perspectiva nutricional (opcional, usado mayormente en mitos de cocina).",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "tabs": "all",
+            "toolbar": "full",
+            "media_upload": 1,
+            "delay": 0
+        },
+        {
+            "key": "field_palatabilidad_digestion",
+            "label": "Palatabilidad y Digestión",
+            "name": "palatabilidad_digestion",
+            "type": "wysiwyg",
+            "instructions": "Detalle sobre la palatabilidad y digestión (opcional, usado mayormente en mitos de cocina).",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "tabs": "all",
+            "toolbar": "full",
+            "media_upload": 1,
+            "delay": 0
+        },
+        {
+            "key": "field_referencias",
+            "label": "Referencias",
+            "name": "referencias",
+            "type": "textarea",
+            "instructions": "Bibliografía y fuentes del mito.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "maxlength": "",
+            "rows": "",
+            "new_lines": ""
+        },
+        {
+            "key": "field_revisor",
+            "label": "Revisor Asociado",
+            "name": "revisor",
+            "type": "post_object",
+            "instructions": "Selecciona el nutricionista o profesional que revisa este mito.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "post_type": [
+                "revisores"
+            ],
+            "taxonomy": "",
+            "allow_null": 1,
+            "multiple": 0,
+            "return_format": "id",
+            "ui": 1
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "mitos"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0
+}
