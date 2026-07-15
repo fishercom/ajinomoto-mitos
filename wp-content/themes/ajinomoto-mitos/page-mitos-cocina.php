@@ -11,6 +11,8 @@ get_header();
 $cocina_args = array(
     'post_type'      => 'mitos',
     'posts_per_page' => -1,
+    'orderby'        => 'menu_order',
+    'order'          => 'ASC',
     'tax_query'      => array(
         array(
             'taxonomy' => 'tipo_mito',
@@ -47,9 +49,14 @@ if ( $cocina_query->have_posts() ) {
             $revisor_img = get_template_directory_uri() . '/img/personal/chica.png';
         }
 
+        $subtitulo = get_post_meta( get_the_ID(), 'subtitulo_mito', true );
+        if ( empty( $subtitulo ) ) {
+            $subtitulo = get_the_title();
+        }
+
         $mitos_list[] = array(
             'id'             => get_the_ID(),
-            'title'          => get_the_title(),
+            'title'          => $subtitulo,
             'cat_slug'       => $cat_slug,
             'cat_name'       => $cat_name,
             'realidad_corta' => $realidad_corta,
@@ -107,7 +114,7 @@ if ( $cocina_query->have_posts() ) {
                 </div>
             </div>
             <div class="imgOsito">
-                <img src="img/osito-bt-cocina.svg" alt="ositos">
+                <img src="<?php echo get_template_directory_uri(); ?>/img/osito-bt-cocina.svg" alt="ositos">
             </div>
             <a href="javascript:history.back()" class="btn circular"></a>
         <div x-cloak x-show="modal" x-transition.opacity.duration.500ms @keydown.esc.window="modal = false"

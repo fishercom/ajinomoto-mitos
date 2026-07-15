@@ -435,6 +435,8 @@ get_header();
                     $args = array(
                         'post_type'      => 'mitos',
                         'posts_per_page' => -1,
+                        'orderby'        => 'menu_order',
+                        'order'          => 'ASC',
                         'tax_query'      => array(
                             'relation' => 'AND',
                             array(
