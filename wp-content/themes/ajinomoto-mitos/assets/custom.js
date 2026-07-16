@@ -380,26 +380,63 @@ document.querySelectorAll('.buscador').forEach(buscador => {
     const icono = buscador.querySelector('i');
     const input = buscador.querySelector('input');
 
-    icono.addEventListener('click', () => {
-        buscador.classList.toggle('activo');
-        if (buscador.classList.contains('activo')) {
-            setTimeout(() => input.focus(), 300);
-        }
+    // Expandir al pasar el mouse
+    buscador.addEventListener('mouseenter', () => {
+        buscador.classList.add('activo');
+        setTimeout(() => input.focus(), 100);
     });
 
-    input.addEventListener('blur', () => {
-        if (input.value.trim() === '') {
+    // Ocultar al salir el mouse (si está vacío y no tiene el foco)
+    buscador.addEventListener('mouseleave', () => {
+        if (input.value.trim() === '' && document.activeElement !== input) {
             buscador.classList.remove('activo');
         }
     });
+
+    // Ocultar al perder foco si está vacío
+    input.addEventListener('blur', () => {
+        setTimeout(() => {
+            if (input.value.trim() === '' && !buscador.matches(':hover')) {
+                buscador.classList.remove('activo');
+            }
+        }, 150);
+    });
+
+    // Controlar click en el icono/botón para evitar envíos vacíos
+    if (icono) {
+        const button = icono.closest('button');
+        const trigger = button || icono;
+        
+        trigger.addEventListener('click', (e) => {
+            if (!buscador.classList.contains('activo')) {
+                e.preventDefault();
+                buscador.classList.add('activo');
+                input.focus();
+            } else if (input.value.trim() === '') {
+                e.preventDefault();
+                buscador.classList.remove('activo');
+            }
+            // Si está activo y tiene texto, se envía el formulario
+        });
+    }
 });
 
-const input = document.getElementById("buscar");
-if(input){
-    input.addEventListener("keydown", function(event) {
+// Soporte para tecla Enter
+const inputSearch = document.getElementById("buscar");
+if (inputSearch) {
+    inputSearch.addEventListener("keydown", function(event) {
         if (event.key === "Enter") {
-            const texto = input.value;
-            window.location.href = "resultados.html?buscar=" + encodeURIComponent(texto);
+            event.preventDefault();
+            const texto = inputSearch.value.trim();
+            if (texto !== '') {
+                const form = inputSearch.closest('form');
+                if (form) {
+                    form.submit();
+                } else {
+                    // Fallback para maquetación estática
+                    window.location.href = "resultados.html?buscar=" + encodeURIComponent(texto);
+                }
+            }
         }
     });
 }
