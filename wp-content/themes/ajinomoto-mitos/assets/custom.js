@@ -379,64 +379,60 @@ if (hero && bgImages.length) {
 document.querySelectorAll('.buscador').forEach(buscador => {
     const icono = buscador.querySelector('i');
     const input = buscador.querySelector('input');
+    const button = buscador.querySelector('button');
 
-    // Expandir al pasar el mouse
-    buscador.addEventListener('mouseenter', () => {
-        buscador.classList.add('activo');
-        setTimeout(() => input.focus(), 100);
-    });
-
-    // Ocultar al salir el mouse (si está vacío y no tiene el foco)
-    buscador.addEventListener('mouseleave', () => {
-        if (input.value.trim() === '' && document.activeElement !== input) {
-            buscador.classList.remove('activo');
-        }
-    });
-
-    // Ocultar al perder foco si está vacío
-    input.addEventListener('blur', () => {
-        setTimeout(() => {
-            if (input.value.trim() === '' && !buscador.matches(':hover')) {
-                buscador.classList.remove('activo');
-            }
-        }, 150);
-    });
-
-    // Controlar click en el icono/botón para evitar envíos vacíos
-    if (icono) {
-        const button = icono.closest('button');
-        const trigger = button || icono;
-        
+    // Manejar el click en el disparador (botón/icono)
+    const trigger = button || icono;
+    if (trigger) {
         trigger.addEventListener('click', (e) => {
             if (!buscador.classList.contains('activo')) {
+                // Si no está activo, prevenimos el envío de formulario y lo activamos
                 e.preventDefault();
                 buscador.classList.add('activo');
-                input.focus();
-            } else if (input.value.trim() === '') {
-                e.preventDefault();
-                buscador.classList.remove('activo');
+                setTimeout(() => input.focus(), 100);
+            } else {
+                // Si está activo
+                const texto = input.value.trim();
+                if (texto === '') {
+                    // Si está vacío, contrae el buscador y previene el envío
+                    e.preventDefault();
+                    buscador.classList.remove('activo');
+                } else {
+                    // Si tiene texto, se realiza el submit normal del formulario
+                    // Si no hay un elemento form (maqueta estática), hacemos la redirección manual
+                    const form = buscador.closest('form');
+                    if (!form) {
+                        e.preventDefault();
+                        window.location.href = "resultados.html?buscar=" + encodeURIComponent(texto);
+                    }
+                }
             }
-            // Si está activo y tiene texto, se envía el formulario
         });
     }
-});
 
-// Soporte para tecla Enter
-const inputSearch = document.getElementById("buscar");
-if (inputSearch) {
-    inputSearch.addEventListener("keydown", function(event) {
+    // Colapsar si se pierde el foco y está vacío
+    input.addEventListener('blur', () => {
+        setTimeout(() => {
+            if (input.value.trim() === '') {
+                buscador.classList.remove('activo');
+            }
+        }, 200);
+    });
+
+    // Soporte para tecla Enter
+    input.addEventListener("keydown", function(event) {
         if (event.key === "Enter") {
-            event.preventDefault();
-            const texto = inputSearch.value.trim();
-            if (texto !== '') {
-                const form = inputSearch.closest('form');
-                if (form) {
-                    form.submit();
-                } else {
-                    // Fallback para maquetación estática
+            const texto = input.value.trim();
+            if (texto === '') {
+                event.preventDefault();
+                buscador.classList.remove('activo');
+            } else {
+                const form = buscador.closest('form');
+                if (!form) {
+                    event.preventDefault();
                     window.location.href = "resultados.html?buscar=" + encodeURIComponent(texto);
                 }
             }
         }
     });
-}
+});
