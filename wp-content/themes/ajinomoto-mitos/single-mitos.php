@@ -200,9 +200,9 @@ if ( have_posts() ) :
                                         </div>
                                         
                                         <!-- Contenedor del reCAPTCHA de Google -->
-                                        <div class="g-recaptcha" data-sitekey="<?php echo esc_attr( defined('RECAPTCHA_SITE_KEY') ? RECAPTCHA_SITE_KEY : '6LeGxAcTAAAAAJcZ57UY7RvwA2W6vM9VEwUylNsQ' ); ?>" style="margin-bottom: 15px;"></div>
+                                        <div class="g-recaptcha" data-sitekey="<?php echo esc_attr( defined('RECAPTCHA_SITE_KEY') ? RECAPTCHA_SITE_KEY : '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' ); ?>" style="margin-bottom: 15px;"></div>
                                         
-                                        <button type="submit" class="btn" style="border: none; cursor: pointer; display: inline-block;">Envía mito</button>
+                                        <a href="#" class="btn btn-submit-form" id="btn-submit-mito">Envía mito</a>
                                     </div>
                                 </div>
                             </div>

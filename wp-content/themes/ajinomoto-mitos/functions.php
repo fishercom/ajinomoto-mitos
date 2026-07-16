@@ -193,7 +193,7 @@ function handle_enviar_mito() {
         wp_send_json_error( array( 'message' => 'Por favor, completa la verificación de reCAPTCHA.' ) );
     }
 
-    $secret_key = defined( 'RECAPTCHA_SECRET_KEY' ) ? RECAPTCHA_SECRET_KEY : '6LeGxAcTAAAAAL51s55o3UX1dxYS2UrC2EPp84C8';
+    $secret_key = defined( 'RECAPTCHA_SECRET_KEY' ) ? RECAPTCHA_SECRET_KEY : '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
     $verify_url = 'https://www.google.com/recaptcha/api/siteverify';
     
     $response = wp_remote_post( $verify_url, array(

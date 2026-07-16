@@ -443,6 +443,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const msgDiv = document.getElementById('form-message');
 
     if (formMito) {
+        // Enlazar el enlace de envío <a> para que actúe como disparador del submit
+        const linkSubmit = formMito.querySelector('.btn-submit-form') || formMito.querySelector('.btn');
+        if (linkSubmit) {
+            linkSubmit.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (linkSubmit.classList.contains('disabled')) return;
+                // Disparar el evento submit en el formulario
+                formMito.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+            });
+        }
+
         formMito.addEventListener('submit', (e) => {
             e.preventDefault();
 
@@ -478,10 +489,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Deshabilitar botón de envío
-            const submitBtn = formMito.querySelector('button[type="submit"]');
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Enviando...';
+            if (linkSubmit) {
+                linkSubmit.classList.add('disabled');
+                linkSubmit.textContent = 'Enviando...';
+                linkSubmit.style.pointerEvents = 'none';
             }
 
             // Preparar datos
@@ -511,9 +522,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 showMsg('Error de red. Por favor, inténtalo de nuevo más tarde.', 'error');
             })
             .finally(() => {
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Envía mito';
+                if (linkSubmit) {
+                    linkSubmit.classList.remove('disabled');
+                    linkSubmit.textContent = 'Envía mito';
+                    linkSubmit.style.pointerEvents = 'auto';
                 }
             });
         });
