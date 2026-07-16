@@ -225,6 +225,21 @@ function handle_enviar_mito() {
         wp_send_json_error( array( 'message' => 'Todos los campos son obligatorios.' ) );
     }
 
+    // Validar que el DNI sea numérico
+    if ( ! preg_match( '/^[0-9]+$/', $dni ) ) {
+        wp_send_json_error( array( 'message' => 'El Número de DNI debe contener solo números.' ) );
+    }
+
+    // Validar que el celular sea numérico (corrigiendo el typo de la solicitud)
+    if ( ! preg_match( '/^[0-9]+$/', $celular ) ) {
+        wp_send_json_error( array( 'message' => 'El Número de celular debe contener solo números.' ) );
+    }
+
+    // Validar formato de correo electrónico
+    if ( ! is_email( $email ) ) {
+        wp_send_json_error( array( 'message' => 'Por favor, ingresa un correo electrónico válido.' ) );
+    }
+
     // Correo de destino del administrador
     $to = get_option( 'admin_email' );
     $subject = 'Nuevo Mito Recibido de: ' . $nombre;
@@ -243,13 +258,137 @@ function handle_enviar_mito() {
     </p>
     ";
 
+    // Guardar en la base de datos como post de tipo 'mitos_recibidos'
+    $post_id = wp_insert_post( array(
+        'post_title'   => 'Mito de ' . $nombre,
+        'post_content' => $mensaje_mito,
+        'post_status'  => 'publish', // Al ser no público, funciona como registro privado
+        'post_type'    => 'mitos_recibidos',
+    ) );
+
+    if ( ! is_wp_error( $post_id ) ) {
+        update_post_meta( $post_id, 'user_dni', $dni );
+        update_post_meta( $post_id, 'user_email', $email );
+        update_post_meta( $post_id, 'user_celular', $celular );
+    }
+
     $sent = wp_mail( $to, $subject, $body, $headers );
 
-    if ( $sent ) {
+    if ( ! is_wp_error( $post_id ) ) {
         wp_send_json_success( array( 'message' => '¡Gracias! Tu mito ha sido enviado correctamente.' ) );
     } else {
-        wp_send_json_error( array( 'message' => 'Error al enviar el correo. Por favor, inténtalo de nuevo.' ) );
+        wp_send_json_error( array( 'message' => 'Error al guardar tu mito. Por favor, inténtalo de nuevo.' ) );
     }
 }
 add_action( 'wp_ajax_enviar_mito', 'handle_enviar_mito' );
 add_action( 'wp_ajax_nopriv_enviar_mito', 'handle_enviar_mito' );
+
+/**
+ * Registro de Custom Post Type 'mitos_recibidos' (Buzón de Mitos).
+ */
+function ajinomoto_mitos_register_recibidos_cpt() {
+    $labels = array(
+        'name'               => 'Mitos Recibidos',
+        'singular_name'      => 'Mito Recibido',
+        'menu_name'          => 'Mitos Recibidos',
+        'name_admin_bar'     => 'Mito Recibido',
+        'add_new'            => 'Añadir Nuevo',
+        'add_new_item'       => 'Añadir Nuevo Mito Recibido',
+        'new_item'           => 'Nuevo Mito Recibido',
+        'edit_item'          => 'Ver/Editar Mito Recibido',
+        'view_item'          => 'Ver Mito Recibido',
+        'all_items'          => 'Todos los Mitos',
+        'search_items'       => 'Buscar Mitos Recibidos',
+        'not_found'          => 'No se encontraron mitos recibidos',
+        'not_found_in_trash' => 'No hay mitos recibidos en la papelera',
+    );
+
+    $args = array(
+        'labels'             => $labels,
+        'public'             => false, // Privado, no accesible en el frontend
+        'show_ui'            => true,  // Mostrar en la administración de WordPress
+        'show_in_menu'       => true,
+        'query_var'          => true,
+        'rewrite'            => false,
+        'capability_type'    => 'post',
+        'has_archive'        => false,
+        'hierarchical'       => false,
+        'menu_position'      => 26,
+        'menu_icon'          => 'dashicons-email-alt2',
+        'supports'           => array( 'title', 'editor' ),
+    );
+
+    register_post_type( 'mitos_recibidos', $args );
+}
+add_action( 'init', 'ajinomoto_mitos_register_recibidos_cpt' );
+
+/**
+ * Agregar columnas personalizadas al listado de Mitos Recibidos.
+ */
+function set_custom_edit_mitos_recibidos_columns($columns) {
+    $new_columns = array(
+        'cb' => $columns['cb'],
+        'title' => 'Nombre del Usuario',
+        'user_dni' => 'DNI',
+        'user_email' => 'Correo Electrónico',
+        'user_celular' => 'Celular',
+        'date' => $columns['date'],
+    );
+    return $new_columns;
+}
+add_filter( 'manage_mitos_recibidos_posts_columns', 'set_custom_edit_mitos_recibidos_columns' );
+
+/**
+ * Mostrar valores en las columnas personalizadas.
+ */
+function custom_mitos_recibidos_column( $column, $post_id ) {
+    switch ( $column ) {
+        case 'user_dni' :
+            echo esc_html( get_post_meta( $post_id, 'user_dni', true ) );
+            break;
+        case 'user_email' :
+            echo esc_html( get_post_meta( $post_id, 'user_email', true ) );
+            break;
+        case 'user_celular' :
+            echo esc_html( get_post_meta( $post_id, 'user_celular', true ) );
+            break;
+    }
+}
+add_action( 'manage_mitos_recibidos_posts_custom_column' , 'custom_mitos_recibidos_column', 10, 2 );
+
+/**
+ * Metabox para mostrar los datos del usuario en la edición del post.
+ */
+function add_mitos_recibidos_metabox() {
+    add_meta_box(
+        'mitos_recibidos_details',
+        'Datos del Usuario',
+        'display_mitos_recibidos_metabox',
+        'mitos_recibidos',
+        'normal',
+        'high'
+    );
+}
+add_action( 'add_meta_boxes', 'add_mitos_recibidos_metabox' );
+
+function display_mitos_recibidos_metabox( $post ) {
+    $dni = get_post_meta( $post->ID, 'user_dni', true );
+    $email = get_post_meta( $post->ID, 'user_email', true );
+    $celular = get_post_meta( $post->ID, 'user_celular', true );
+    ?>
+    <table class="form-table">
+        <tr>
+            <th style="width:20%;"><label>DNI:</label></th>
+            <td><input type="text" style="width:100%;" value="<?php echo esc_attr( $dni ); ?>" readonly /></td>
+        </tr>
+        <tr>
+            <th><label>Correo Electrónico:</label></th>
+            <td><input type="text" style="width:100%;" value="<?php echo esc_attr( $email ); ?>" readonly /></td>
+        </tr>
+        <tr>
+            <th><label>Celular:</label></th>
+            <td><input type="text" style="width:100%;" value="<?php echo esc_attr( $celular ); ?>" readonly /></td>
+        </tr>
+    </table>
+    <?php
+}

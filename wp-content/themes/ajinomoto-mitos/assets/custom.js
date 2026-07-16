@@ -467,6 +467,26 @@ document.addEventListener('DOMContentLoaded', () => {
             // Validar checkboxes
             const chkDatos = document.getElementById('datos');
             const chkTerminos = document.getElementById('terminos');
+            
+            const dniVal = document.getElementById('dni').value.trim();
+            const celularVal = document.getElementById('celular').value.trim();
+            const emailVal = document.getElementById('email').value.trim();
+
+            if (!/^[0-9]+$/.test(dniVal)) {
+                showMsg('El Número de DNI debe contener solo números.', 'error');
+                return;
+            }
+
+            if (!/^[0-9]+$/.test(celularVal)) {
+                showMsg('El Número de celular debe contener solo números.', 'error');
+                return;
+            }
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+                showMsg('Por favor, ingresa un correo electrónico válido.', 'error');
+                return;
+            }
+
             if (chkDatos && !chkDatos.checked) {
                 showMsg('Debes autorizar el tratamiento de tus datos personales.', 'error');
                 return;
