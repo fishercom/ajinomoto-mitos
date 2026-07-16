@@ -174,7 +174,7 @@ if ( have_posts() ) :
                                         </div>
                                         <div class="campo">
                                             <label for="dni">Número de DNI</label>
-                                            <input type="text" id="dni" name="dni" required>
+                                            <input type="number" id="dni" name="dni" required>
                                         </div>
                                         <div class="campo">
                                             <label for="email">Correo electrónico</label>
@@ -182,7 +182,7 @@ if ( have_posts() ) :
                                         </div>
                                         <div class="campo">
                                             <label for="celular">Número de celular</label>
-                                            <input type="text" id="celular" name="celular" required>
+                                            <input type="number" id="celular" name="celular" required>
                                         </div>
                                         <div class="campo wfull check">
                                             <input type="checkbox" id="datos" name="datos" value="1" required> 
@@ -200,7 +200,7 @@ if ( have_posts() ) :
                                         </div>
                                         
                                         <!-- Contenedor del reCAPTCHA de Google -->
-                                        <div class="g-recaptcha" data-sitekey="<?php echo esc_attr( defined('RECAPTCHA_SITE_KEY') ? RECAPTCHA_SITE_KEY : '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' ); ?>" style="margin-bottom: 15px;"></div>
+                                        <div class="g-recaptcha" data-sitekey="<?php echo esc_attr( RECAPTCHA_SITE_KEY ); ?>" style="margin-bottom: 15px;"></div>
                                         
                                         <a href="#" class="btn btn-submit-form" id="btn-submit-mito">Envía mito</a>
                                     </div>

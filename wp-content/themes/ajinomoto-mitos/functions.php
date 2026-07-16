@@ -10,6 +10,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Configuración de claves por defecto para Google reCAPTCHA v2 (pueden sobreescribirse en wp-config.php)
+ */
+if ( ! defined( 'RECAPTCHA_SITE_KEY' ) ) {
+    define( 'RECAPTCHA_SITE_KEY', '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' );
+}
+if ( ! defined( 'RECAPTCHA_SECRET_KEY' ) ) {
+    define( 'RECAPTCHA_SECRET_KEY', '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe' );
+}
+
+/**
  * Encolar los estilos y scripts del tema.
  */
 function ajinomoto_mitos_scripts() {
@@ -35,9 +45,14 @@ function ajinomoto_mitos_scripts() {
     // Swiper y Custom JS en Footer
     wp_enqueue_script( 'swiper-js', get_template_directory_uri() . '/assets/vendor/swiper/swiper-bundle.min.js', array(), '8.0.0', true );
     wp_enqueue_script( 'ajinomoto-custom', get_template_directory_uri() . '/assets/custom.js', array( 'gsap', 'swiper-js' ), '1.0.0', true );
+    wp_enqueue_script( 'ajinomoto-forms', get_template_directory_uri() . '/assets/forms.js', array(), '1.0.0', true );
 
-    // Parámetros globales para el JS de búsqueda
+    // Parámetros globales para el JS de búsqueda y formularios
     wp_localize_script( 'ajinomoto-custom', 'ajinomoto_params', array(
+        'ajax_url' => admin_url( 'admin-ajax.php' ),
+        'site_url' => site_url(),
+    ));
+    wp_localize_script( 'ajinomoto-forms', 'ajinomoto_params', array(
         'ajax_url' => admin_url( 'admin-ajax.php' ),
         'site_url' => site_url(),
     ));
@@ -193,7 +208,7 @@ function handle_enviar_mito() {
         wp_send_json_error( array( 'message' => 'Por favor, completa la verificación de reCAPTCHA.' ) );
     }
 
-    $secret_key = defined( 'RECAPTCHA_SECRET_KEY' ) ? RECAPTCHA_SECRET_KEY : '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
+    $secret_key = RECAPTCHA_SECRET_KEY;
     $verify_url = 'https://www.google.com/recaptcha/api/siteverify';
     
     $response = wp_remote_post( $verify_url, array(
