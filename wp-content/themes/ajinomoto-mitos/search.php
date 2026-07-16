@@ -1,74 +1,69 @@
 <?php
 /**
- * Plantilla de resultados de búsqueda.
+ * Plantilla de resultados de búsqueda (search.php).
  *
  * @package Ajinomoto_Mitos
  */
 
 get_header();
+
+global $wp_query;
+$total_results = $wp_query->found_posts;
+$posts_per_page = get_option( 'posts_per_page' );
+$paged = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
+$start_result = ( ( $paged - 1 ) * $posts_per_page ) + 1;
+$end_result = min( $paged * $posts_per_page, $total_results );
 ?>
 
 <main class="interna">
     <div class="contenido">
         <div class="intro">
-            <h1>Resultados de búsqueda</h1>
-            <p>Mostrando resultados para: <strong>"<?php echo esc_html( get_search_query() ); ?>"</strong></p>
+            <h1>Resultado de búsqueda</h1>            
         </div>
-
-        <div class="bloqueBlanco">
-            <?php if ( have_posts() ) : ?>
-                <div class="mitos" style="margin-top: 20px;">
-                    <div class="informacion" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
-                        <?php while ( have_posts() ) : the_post(); 
-                            $post_type_label = '';
-                            $p_type = get_post_type();
-                            if ( $p_type === 'mitos' ) {
-                                $tipo_terms = get_the_terms( get_the_ID(), 'tipo_mito' );
-                                $tipo_slug = ( ! empty( $tipo_terms ) && ! is_wp_error( $tipo_terms ) ) ? $tipo_terms[0]->slug : 'cocina';
-                                $post_type_label = ( $tipo_slug === 'gms' ) ? 'Mito del GMS' : 'Mito de la cocina';
-                            } elseif ( $p_type === 'revisores' ) {
-                                $post_type_label = 'Revisor Profesional';
-                            } else {
-                                $post_type_label = 'Información';
-                            }
-                        ?>
-                            <div class="item" style="display: flex; flex-direction: column; width: 100%;">
-                                <div class="caja" style="width: 100%; display: flex; flex-direction: column; justify-content: space-between; min-height: 220px;">
-                                    <div class="top">
-                                        <h4><?php echo esc_html( $post_type_label ); ?></h4>
-                                    </div>
-                                    <div class="descripcion" style="flex-grow: 1; padding: 15px 0;">
-                                        <h5 style="margin: 0; color: #ff0000; font-size: 1.1em;"><?php the_title(); ?></h5>
-                                        <p style="margin: 10px 0 0; font-size: 0.9em; line-height: 1.4; color: #666;">
-                                            <?php echo wp_trim_words( get_the_excerpt(), 20, '...' ); ?>
-                                        </p>
-                                    </div>
-                                    <a href="<?php the_permalink(); ?>" class="btn circular"></a>
-                                </div>
-                            </div>
-                        <?php endwhile; ?>
+        
+        <?php if ( have_posts() ) : ?>
+            <p>Resultado <strong><?php echo $start_result; ?></strong> de <strong><?php echo $total_results; ?></strong> de "<strong><?php echo esc_html( get_search_query() ); ?></strong>"</p>
+            
+            <div class="resultados">
+                <?php while ( have_posts() ) : the_post(); ?>
+                    <div class="item">
+                        <h4><?php the_title(); ?></h4>
+                        <p><?php echo wp_trim_words( get_the_excerpt(), 50, '...' ); ?></p>
+                        <a href="<?php the_permalink(); ?>"><?php the_permalink(); ?></a>
                     </div>
+                <?php endwhile; ?>
+            </div>
+
+            <?php
+            // Paginación
+            $pages = paginate_links( array(
+                'type'      => 'array',
+                'prev_next' => false,
+            ) );
+
+            if ( is_array( $pages ) ) {
+                echo '<div class="paginado">';
+                foreach ( $pages as $page ) {
+                    if ( strpos( $page, 'current' ) !== false ) {
+                        $page = str_replace( array( '<span', '</span>', 'class="page-numbers current"' ), array( '<a', '</a>', 'class="active"' ), $page );
+                    }
+                    echo $page;
+                }
+                echo '</div>';
+            }
+            ?>
+        <?php else : ?>
+            <p>No se encontraron resultados de "<strong><?php echo esc_html( get_search_query() ); ?></strong>"</p>
+            <div class="resultados">
+                <div class="item" style="border-bottom: none;">
+                    <p>Lo sentimos, no encontramos información o mitos relacionados con tus términos de búsqueda. Por favor, intenta de nuevo con otros términos.</p>
                 </div>
-                
-                <?php
-                // Paginación
-                the_posts_pagination( array(
-                    'prev_text' => '<i class="fas fa-chevron-left"></i> Anterior',
-                    'next_text' => 'Siguiente <i class="fas fa-chevron-right"></i>',
-                ) );
-                ?>
-            <?php else : ?>
-                <div class="no-results" style="padding: 40px 20px; text-align: center;">
-                    <h3 style="color: #ff0000; margin-bottom: 15px;">No se encontraron resultados</h3>
-                    <p style="color: #666; font-size: 1.1em;">Lo sentimos, no encontramos información o mitos relacionados con <strong>"<?php echo esc_html( get_search_query() ); ?>"</strong>. Por favor, intenta de nuevo con otros términos de búsqueda.</p>
-                </div>
-            <?php endif; ?>
-        </div>
+            </div>
+        <?php endif; ?>
 
         <div class="imgOsito">
-            <img src="<?php echo get_template_directory_uri(); ?>/img/ositos-bt-info.svg" alt="ositos">
-        </div>
-        <a href="javascript:history.back()" class="btn circular"></a>
+            <img src="<?php echo get_template_directory_uri(); ?>/img/osito-bt-cuentanos.svg" alt="ositos">
+        </div>            
     </div>
 </main>
 
