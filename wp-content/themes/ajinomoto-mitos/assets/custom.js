@@ -436,3 +436,104 @@ document.querySelectorAll('.buscador').forEach(buscador => {
         }
     });
 });
+
+// Manejo del formulario "Cuéntanos tu mito"
+document.addEventListener('DOMContentLoaded', () => {
+    const formMito = document.getElementById('form-cuentanos-mito');
+    const msgDiv = document.getElementById('form-message');
+
+    if (formMito) {
+        formMito.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // Ocultar mensaje previo
+            if (msgDiv) {
+                msgDiv.style.display = 'none';
+                msgDiv.className = '';
+                msgDiv.textContent = '';
+            }
+
+            // Validar checkboxes
+            const chkDatos = document.getElementById('datos');
+            const chkTerminos = document.getElementById('terminos');
+            if (chkDatos && !chkDatos.checked) {
+                showMsg('Debes autorizar el tratamiento de tus datos personales.', 'error');
+                return;
+            }
+            if (chkTerminos && !chkTerminos.checked) {
+                showMsg('Debes aceptar los Términos y Condiciones.', 'error');
+                return;
+            }
+
+            // Validar reCAPTCHA
+            if (typeof grecaptcha !== 'undefined') {
+                const recaptchaVal = grecaptcha.getResponse();
+                if (recaptchaVal.length === 0) {
+                    showMsg('Por favor, marca la casilla "No soy un robot" de reCAPTCHA.', 'error');
+                    return;
+                }
+            } else {
+                showMsg('Error cargando el verificador reCAPTCHA. Por favor, recarga la página.', 'error');
+                return;
+            }
+
+            // Deshabilitar botón de envío
+            const submitBtn = formMito.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Enviando...';
+            }
+
+            // Preparar datos
+            const formData = new FormData(formMito);
+
+            // Enviar AJAX
+            const ajaxUrl = typeof ajinomoto_params !== 'undefined' ? ajinomoto_params.ajax_url : '/wp-admin/admin-ajax.php';
+
+            fetch(ajaxUrl, {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showMsg(data.data.message, 'success');
+                    formMito.reset();
+                    if (typeof grecaptcha !== 'undefined') {
+                        grecaptcha.reset();
+                    }
+                } else {
+                    showMsg(data.data.message || 'Ocurrió un error al enviar el mito.', 'error');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                showMsg('Error de red. Por favor, inténtalo de nuevo más tarde.', 'error');
+            })
+            .finally(() => {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Envía mito';
+                }
+            });
+        });
+    }
+
+    function showMsg(text, type) {
+        if (!msgDiv) {
+            alert(text);
+            return;
+        }
+        msgDiv.textContent = text;
+        msgDiv.style.display = 'block';
+        if (type === 'success') {
+            msgDiv.style.backgroundColor = '#e6ffed';
+            msgDiv.style.color = '#22863a';
+            msgDiv.style.border = '1px solid #34d058';
+        } else {
+            msgDiv.style.backgroundColor = '#ffeef0';
+            msgDiv.style.color = '#cb2431';
+            msgDiv.style.border = '1px solid #f97583';
+        }
+    }
+});

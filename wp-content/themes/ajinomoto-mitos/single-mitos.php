@@ -157,31 +157,37 @@ if ( have_posts() ) :
                     // Fallback estático maquetado
                     ?>
                     <div class="formulario">
-                        <form action="">
+                        <!-- Script oficial de reCAPTCHA v2 -->
+                        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+                        <form id="form-cuentanos-mito" method="POST">
+                            <!-- Campo oculto para indicar acción AJAX de WordPress y nonce -->
+                            <input type="hidden" name="action" value="enviar_mito">
+                            <?php wp_nonce_field( 'enviar_mito_nonce', 'security' ); ?>
+                            
                             <div class="bloque">
                                 <div class="c1">
                                     <h3>Ingresa tus datos</h3>
                                     <div class="bForm">
                                         <div class="campo">
                                             <label for="nombre">Nombres y apellidos</label>
-                                            <input type="text" id="nombre">
+                                            <input type="text" id="nombre" name="nombre" required>
                                         </div>
                                         <div class="campo">
                                             <label for="dni">Número de DNI</label>
-                                            <input type="text" id="dni">
+                                            <input type="text" id="dni" name="dni" required>
                                         </div>
                                         <div class="campo">
                                             <label for="email">Correo electrónico</label>
-                                            <input type="email" id="email">
+                                            <input type="email" id="email" name="email" required>
                                         </div>
                                         <div class="campo">
                                             <label for="celular">Número de celular</label>
-                                            <input type="text" id="celular">
+                                            <input type="text" id="celular" name="celular" required>
                                         </div>
                                         <div class="campo wfull check">
-                                            <input type="checkbox" id="datos" placeholder="acepto"> 
+                                            <input type="checkbox" id="datos" name="datos" value="1" required> 
                                             <label for="datos">Autorizo el tratamiento de mis datos por parte de Ajinomoto del Perú S.A.</label><br>
-                                            <input type="checkbox" id="terminos" placeholder="acepto"> 
+                                            <input type="checkbox" id="terminos" name="terminos" value="1" required> 
                                             <label for="terminos"><a href="#">Acepto los Términos y Condiciones</a></label>
                                         </div>
                                     </div>
@@ -190,14 +196,18 @@ if ( have_posts() ) :
                                     <div class="blk textura">
                                         <h3>¿Cuál es tu mito?</h3>
                                         <div class="campo wfull">
-                                            <textarea name="mensaje_mito" id="mensaje_mito" cols="30" rows="4"></textarea>
+                                            <textarea name="mensaje_mito" id="mensaje_mito" cols="30" rows="4" required></textarea>
                                         </div>
-                                        <img src="<?php echo get_template_directory_uri(); ?>/img/capcha.png" alt="captcha" style="margin-bottom:10px;">
-                                        <a href="#" class="btn">Envía mito</a>
+                                        
+                                        <!-- Contenedor del reCAPTCHA de Google -->
+                                        <div class="g-recaptcha" data-sitekey="<?php echo esc_attr( defined('RECAPTCHA_SITE_KEY') ? RECAPTCHA_SITE_KEY : '6LeGxAcTAAAAAJcZ57UY7RvwA2W6vM9VEwUylNsQ' ); ?>" style="margin-bottom: 15px;"></div>
+                                        
+                                        <button type="submit" class="btn" style="border: none; cursor: pointer; display: inline-block;">Envía mito</button>
                                     </div>
                                 </div>
                             </div>
                         </form>
+                        <div id="form-message" style="margin-top: 15px; padding: 10px; display: none; border-radius: 4px; font-weight: bold; text-align: center;"></div>
                     </div>
                     <?php
                 }

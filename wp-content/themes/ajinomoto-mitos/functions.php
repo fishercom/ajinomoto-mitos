@@ -177,3 +177,79 @@ function ajinomoto_mitos_register_taxonomies() {
     register_taxonomy( 'categoria_mito', array( 'mitos' ), $args_cat );
 }
 add_action( 'init', 'ajinomoto_mitos_register_taxonomies' );
+
+/**
+ * Procesar el envío del formulario 'Cuéntanos tu mito'.
+ */
+function handle_enviar_mito() {
+    // Verificar nonce de seguridad
+    if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( $_POST['security'], 'enviar_mito_nonce' ) ) {
+        wp_send_json_error( array( 'message' => 'Error de seguridad. Por favor, recarga la página.' ) );
+    }
+
+    // Validar reCAPTCHA
+    $recaptcha_response = isset( $_POST['g-recaptcha-response'] ) ? sanitize_text_field( $_POST['g-recaptcha-response'] ) : '';
+    if ( empty( $recaptcha_response ) ) {
+        wp_send_json_error( array( 'message' => 'Por favor, completa la verificación de reCAPTCHA.' ) );
+    }
+
+    $secret_key = defined( 'RECAPTCHA_SECRET_KEY' ) ? RECAPTCHA_SECRET_KEY : '6LeGxAcTAAAAAL51s55o3UX1dxYS2UrC2EPp84C8';
+    $verify_url = 'https://www.google.com/recaptcha/api/siteverify';
+    
+    $response = wp_remote_post( $verify_url, array(
+        'body' => array(
+            'secret'   => $secret_key,
+            'response' => $recaptcha_response,
+            'remoteip' => $_SERVER['REMOTE_ADDR'],
+        ),
+    ) );
+
+    if ( is_wp_error( $response ) ) {
+        wp_send_json_error( array( 'message' => 'No se pudo verificar el reCAPTCHA. Inténtalo más tarde.' ) );
+    }
+
+    $response_body = json_decode( wp_remote_retrieve_body( $response ), true );
+    if ( ! isset( $response_body['success'] ) || ! $response_body['success'] ) {
+        wp_send_json_error( array( 'message' => 'Falló la verificación de reCAPTCHA. Inténtalo de nuevo.' ) );
+    }
+
+    // Obtener y sanitizar datos del formulario
+    $nombre        = isset( $_POST['nombre'] ) ? sanitize_text_field( $_POST['nombre'] ) : '';
+    $dni           = isset( $_POST['dni'] ) ? sanitize_text_field( $_POST['dni'] ) : '';
+    $email         = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
+    $celular       = isset( $_POST['celular'] ) ? sanitize_text_field( $_POST['celular'] ) : '';
+    $mensaje_mito  = isset( $_POST['mensaje_mito'] ) ? sanitize_textarea_field( $_POST['mensaje_mito'] ) : '';
+
+    // Validar campos requeridos
+    if ( empty( $nombre ) || empty( $dni ) || empty( $email ) || empty( $celular ) || empty( $mensaje_mito ) ) {
+        wp_send_json_error( array( 'message' => 'Todos los campos son obligatorios.' ) );
+    }
+
+    // Correo de destino del administrador
+    $to = get_option( 'admin_email' );
+    $subject = 'Nuevo Mito Recibido de: ' . $nombre;
+    
+    // Contenido del correo en formato HTML
+    $headers = array( 'Content-Type: text/html; charset=UTF-8' );
+    $body = "
+    <h2>Nuevo Mito Enviado por un Usuario</h2>
+    <p><strong>Nombres y Apellidos:</strong> {$nombre}</p>
+    <p><strong>DNI:</strong> {$dni}</p>
+    <p><strong>Correo Electrónico:</strong> {$email}</p>
+    <p><strong>Celular:</strong> {$celular}</p>
+    <p><strong>Mito Propuesto:</strong></p>
+    <p style='background:#f4f4f4; padding: 15px; border-left: 4px solid #ff0000; font-style: italic;'>
+        " . nl2br( esc_html( $mensaje_mito ) ) . "
+    </p>
+    ";
+
+    $sent = wp_mail( $to, $subject, $body, $headers );
+
+    if ( $sent ) {
+        wp_send_json_success( array( 'message' => '¡Gracias! Tu mito ha sido enviado correctamente.' ) );
+    } else {
+        wp_send_json_error( array( 'message' => 'Error al enviar el correo. Por favor, inténtalo de nuevo.' ) );
+    }
+}
+add_action( 'wp_ajax_enviar_mito', 'handle_enviar_mito' );
+add_action( 'wp_ajax_nopriv_enviar_mito', 'handle_enviar_mito' );
