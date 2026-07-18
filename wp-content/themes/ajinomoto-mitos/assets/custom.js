@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 3, tipo: 'origen', selector: '.origen' },
         { id: 4, tipo: 'factores', selector: '.factores' },
         { id: 5, tipo: 'nutricion', selector: '.nutricion' }
-    ];
+    ].filter(tab => document.querySelector(tab.selector) !== null);
 
     let sliderActivo = null;
     let tabActivoIndex = 0;
@@ -102,14 +102,24 @@ document.addEventListener('DOMContentLoaded', () => {
     function programarSiguienteAutoplay(swiper) {
         clearTimeout(autoplayTimeout);
         autoplayTimeout = setTimeout(() => {
+            // Check if modal is open on Home page
+            const homeEl = document.querySelector('.home');
+            if (homeEl && homeEl._x_dataStack && homeEl._x_dataStack[0].modal) {
+                // Modal is open, do not transition, just reschedule check
+                programarSiguienteAutoplay(swiper);
+                return;
+            }
+
             clearTimeout(timeoutSalidaFondo);
             salidaEscondidoFondo();
 
             // Aumentado a 600ms para dar espacio a que el fondo y la bola terminen su coreografía suave
             setTimeout(() => {
                 if (swiper.isEnd) {
-                    const siguienteIndex = (tabActivoIndex + 1) % tabsOrden.length;
-                    cambiarTab(siguienteIndex);
+                    if (tabsOrden.length > 0) {
+                        const siguienteIndex = (tabActivoIndex + 1) % tabsOrden.length;
+                        cambiarTab(siguienteIndex);
+                    }
                 } else {
                     swiper.slides.forEach(slide => slide.classList.remove('animar-elementos'));
                     swiper.slideNext(600); 
@@ -209,10 +219,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Control de pestañas manual (Tabs)
     const tabButtons = document.querySelectorAll('.tabs > div');
+    const esHome = document.querySelector('.home') !== null;
+
     tabButtons.forEach((button, index) => {
         button.addEventListener('click', () => {
-            if (index === tabActivoIndex) return; 
-            cambiarTab(index);
+            if (esHome) {
+                if (index === tabActivoIndex) return; 
+                cambiarTab(index);
+            } else {
+                moverIndicadorPestana(index + 1);
+            }
         });
     });
 
@@ -246,8 +262,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Arranque inicial
     setTimeout(() => {
-        moverIndicadorPestana(1);
-        construirSliderActivo(tabsOrden[0]);
+        if (esHome) {
+            if (tabsOrden.length > 0) {
+                moverIndicadorPestana(tabsOrden[0].id);
+                construirSliderActivo(tabsOrden[0]);
+            }
+        } else {
+            // En interna, al inicio, posicionar el indicador en el primer tab activo
+            const activeTab = document.querySelector('.tabs > div.active');
+            if (activeTab) {
+                const index = Array.from(tabButtons).indexOf(activeTab);
+                if (index !== -1) {
+                    moverIndicadorPestana(index + 1);
+                }
+            } else {
+                moverIndicadorPestana(1);
+            }
+        }
     }, 250);
 
 

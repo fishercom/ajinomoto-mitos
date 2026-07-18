@@ -59,7 +59,7 @@ if ( have_posts() ) :
             }
         }
         if ( empty( $revisor_img ) ) {
-            $revisor_img = get_template_directory_uri() . '/img/personal/chica.png';
+            $revisor_img = get_template_directory_uri() . '/img/personal/silueta.png';
         }
 
         // Osito decorativo según tipo de mito

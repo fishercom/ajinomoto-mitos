@@ -22,7 +22,7 @@ if ( have_posts() ) :
         // Foto de perfil
         $photo_url = get_the_post_thumbnail_url( $post_id, 'medium_large' );
         if ( empty( $photo_url ) ) {
-            $photo_url = get_template_directory_uri() . '/img/personal/chica.png'; // fallback
+            $photo_url = get_template_directory_uri() . '/img/personal/silueta.png'; // fallback
         }
         ?>
 
