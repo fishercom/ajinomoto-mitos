@@ -52,13 +52,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // SLIDERS DE TEXTO POR PESTAÑA
     // ============================================================
 
+    // Order of tabs for home page sliders
     const tabsOrden = [
         { id: 1, tipo: 'seguridad', selector: '.seguridad' },
         { id: 2, tipo: 'evidencia', selector: '.evidencia' },
         { id: 3, tipo: 'origen', selector: '.origen' },
-        { id: 4, tipo: 'factores', selector: '.factores' },
-        { id: 5, tipo: 'nutricion', selector: '.nutricion' }
-    ].filter(tab => document.querySelector(tab.selector) !== null);
+        { id: 4, tipo: 'factores', selector: '.factores' }
+    ];
 
     let sliderActivo = null;
     let tabActivoIndex = 0;
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
             autoplay: false, 
             navigation: false, 
             pagination: {
-                el: '.swiper-pagination',
+                el: `${tabInfo.selector} .swiper-pagination`,
                 clickable: true
             },
             on: {
@@ -204,6 +204,9 @@ document.addEventListener('DOMContentLoaded', () => {
         tabActivoIndex = index;
         const tabInfo = tabsOrden[index];
 
+        // Notify Alpine.js to reactively update the active tab
+        window.dispatchEvent(new CustomEvent('cambiar-tab-home', { detail: tabInfo.id }));
+
         const homeEl = document.querySelector('.home');
         if (homeEl && homeEl._x_dataStack) {
             homeEl._x_dataStack[0].tab = tabInfo.id;
@@ -214,10 +217,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         setTimeout(() => {
             construirSliderActivo(tabInfo);
-        }, 650); // Ajustado al nuevo tiempo de salida total
+        }, 650);
     }
 
-    // Control de pestañas manual (Tabs)
+    // Manual tab buttons control
     const tabButtons = document.querySelectorAll('.tabs > div');
     const esHome = document.querySelector('.home') !== null;
 
@@ -256,11 +259,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
         }
-
-        //pestañaActiva.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     }
 
-    // Arranque inicial
+    // Initial startup
     setTimeout(() => {
         if (esHome) {
             if (tabsOrden.length > 0) {
@@ -268,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 construirSliderActivo(tabsOrden[0]);
             }
         } else {
-            // En interna, al inicio, posicionar el indicador en el primer tab activo
+            // Internal pages: position indicator on active tab
             const activeTab = document.querySelector('.tabs > div.active');
             if (activeTab) {
                 const index = Array.from(tabButtons).indexOf(activeTab);
@@ -281,27 +282,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 250);
 
+    // Recalculate tab indicator position on window resize
+    window.addEventListener('resize', () => {
+        if (esHome && tabsOrden[tabActivoIndex]) {
+            moverIndicadorPestana(tabsOrden[tabActivoIndex].id);
+        }
+    });
 
-    // --- LÓGICA DE ANIMACIÓN ELÁSTICA ---
-
+    // Elastic animation logic
     function entradaExplosivaFondo(swiperInstancia) {
-        gsap.killTweensOf('.bgSwiper');
+        gsap.killTweensOf('.bgSwiper, .cBlanco');
         gsap.fromTo('.bgSwiper',
             { scale: 0, opacity: 0, transformOrigin: "center center" },
             { scale: 1, opacity: 1, duration: 1.0, ease: "elastic.out(1, 0.6)", overwrite: "auto" }
         );
 
-        let targetBlanco = '.swiper-slide-active .cBlanco';
-        if (swiperInstancia && swiperInstancia.slides) {
-            const slideActual = swiperInstancia.slides[swiperInstancia.activeIndex];
-            if (slideActual) {
-                const cBlancoInterno = slideActual.querySelector('.cBlanco');
-                if (cBlancoInterno) targetBlanco = cBlancoInterno;
-            }
-        }
-
-        gsap.killTweensOf(targetBlanco);
-        gsap.fromTo(targetBlanco,
+        // Animate central myth circle to full scale and opacity
+        gsap.fromTo('.cBlanco',
             { scale: 0, opacity: 0, transformOrigin: "center center" },
             {
                 scale: 1,

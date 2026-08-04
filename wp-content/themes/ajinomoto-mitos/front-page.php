@@ -33,7 +33,7 @@ $categories_button_classes = array(
     4 => 'fac'
 );
 ?>
-    <main x-data="{ tab: 1, modal: false, modalTitle: '', modalMito: '', modalRealidad: '', modalLink: '', modalRevisorName: '', modalRevisorCargo: '', modalRevisorImg: '', modalImg: '' }" class="home">
+    <main x-data="{ tab: 1, modal: false, modalTitle: '', modalMito: '', modalRealidad: '', modalLink: '', modalRevisorName: '', modalRevisorCargo: '', modalRevisorImg: '', modalImg: '' }" @cambiar-tab-home.window="tab = $event.detail" class="home">
          <div class="swiper bgSwiper">
             <div class="swiper-wrapper">
                 <div class="swiper-slide">                    
