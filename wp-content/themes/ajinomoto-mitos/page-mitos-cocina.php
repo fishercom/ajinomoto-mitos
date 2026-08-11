@@ -54,6 +54,10 @@ if ( $cocina_query->have_posts() ) {
             $subtitulo = get_the_title();
         }
 
+        $mito_img = has_post_thumbnail( get_the_ID() )
+            ? get_the_post_thumbnail_url( get_the_ID(), 'medium' )
+            : get_template_directory_uri() . '/img/informacion/mito-cocina.jpg';
+
         $mitos_list[] = array(
             'id'             => get_the_ID(),
             'title'          => $subtitulo,
@@ -63,6 +67,7 @@ if ( $cocina_query->have_posts() ) {
             'revisor_name'   => $revisor_name,
             'revisor_cargo'  => $revisor_cargo,
             'revisor_img'    => $revisor_img,
+            'mito_img'       => $mito_img,
             'permalink'      => get_permalink(),
         );
     }
@@ -126,7 +131,7 @@ if ( $cocina_query->have_posts() ) {
                 x-transition:enter-start="opacity-0 scale-50" x-transition:enter-end="opacity-100 scale-100"
                 class="content-modal">
                 <div class="imgCategoriaMito">
-                    <img src="<?php echo get_template_directory_uri(); ?>/img/informacion/mito-cocina.jpg" alt="">
+                    <img id="mitoCategoriaImg" src="<?php echo esc_url( ! empty( $mitos_list ) ? $mitos_list[0]['mito_img'] : get_template_directory_uri() . '/img/informacion/mito-cocina.jpg' ); ?>" alt="">
                 </div>
                 <div class="top-modal">
                     <h5>Mitos de la cocina</h5>
@@ -136,7 +141,7 @@ if ( $cocina_query->have_posts() ) {
                         <div class="swiper-wrapper">
                             <?php if ( ! empty( $mitos_list ) ) : ?>
                                 <?php foreach ( $mitos_list as $mito ) : ?>
-                                <div class="swiper-slide">
+                                <div class="swiper-slide" data-mito-img="<?php echo esc_url( $mito['mito_img'] ); ?>">
                                     <h4>MITO:</h4>
                                     <p><?php echo esc_html( $mito['title'] ); ?></p>
                                     <h4>REALIDAD:</h4>

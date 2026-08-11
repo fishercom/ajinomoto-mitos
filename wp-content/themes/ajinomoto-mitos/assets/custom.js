@@ -338,6 +338,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Fondo Mitos
+    const mitoCategoriaImg = document.getElementById('mitoCategoriaImg');
+    function actualizarImagenMito(swiper) {
+        if (!mitoCategoriaImg) return;
+        const slideActivo = swiper.slides[swiper.activeIndex];
+        const img = slideActivo && slideActivo.dataset.mitoImg;
+        if (img) mitoCategoriaImg.src = img;
+    }
     const mitoSwiper = new Swiper('.mitoSwiper', {
         fadeEffect: { crossFade: true },
         loop: true,
@@ -347,6 +354,10 @@ document.addEventListener('DOMContentLoaded', () => {
         navigation: {
             nextEl: '.slider-botones .btn.circular.next',
             prevEl: '.slider-botones .btn.circular.prev'
+        },
+        on: {
+            init: actualizarImagenMito,
+            slideChange: actualizarImagenMito,
         },
     });
 });

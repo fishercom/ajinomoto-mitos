@@ -95,6 +95,22 @@ Para que las vistas dinámicas cargen la información correspondiente, debes cre
 
 ---
 
+### 4. Configuración de Google reCAPTCHA v2 (formulario "Cuéntanos tu mito")
+
+El formulario de envío de mitos usa Google reCAPTCHA v2 para prevenir spam. Las claves **no** se guardan en el código del tema ni en el repositorio — se definen como constantes en `wp-config.php`, el cual está excluido de git (ver `.gitignore`).
+
+1. Genera o localiza el par de claves (site key / secret key) para el dominio correspondiente en la [consola de reCAPTCHA de Google](https://www.google.com/recaptcha/admin).
+2. Agrega estas dos líneas a `wp-config.php` (antes de la línea `/* That's all, stop editing! */`):
+   ```php
+   define( 'RECAPTCHA_SITE_KEY', 'tu-site-key' );
+   define( 'RECAPTCHA_SECRET_KEY', 'tu-secret-key' );
+   ```
+3. Si estas constantes no están definidas, `functions.php` las deja vacías y muestra un aviso en el escritorio de WordPress (`wp-admin`) recordando configurarlas; el formulario no funcionará hasta que se agreguen.
+
+> ⚠️ **Importante para despliegues a producción**: el pipeline de Azure (`azure-pipelines.yml`) solo empaqueta la carpeta del tema, **no** `wp-config.php`. Por lo tanto, cada entorno (local, staging, producción) necesita su propio `wp-config.php` con estas constantes configuradas manualmente. Además, ten en cuenta que Google reCAPTCHA valida las claves por dominio — las claves usadas en desarrollo/pruebas probablemente deban reemplazarse por un par nuevo registrado para el dominio final de producción.
+
+---
+
 ## 🔄 Versionamiento en Múltiples Repositorios (GitHub & Azure DevOps)
 
 De acuerdo a los requerimientos, el proyecto se gestionará en dos repositorios remotos simultáneamente.

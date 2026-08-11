@@ -10,14 +10,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Configuración de claves por defecto para Google reCAPTCHA v2 (pueden sobreescribirse en wp-config.php)
+ * Claves de Google reCAPTCHA v2 (formulario "Cuéntanos tu mito").
+ * Deben definirse en wp-config.php (fuera de control de versiones), nunca aquí.
  */
 if ( ! defined( 'RECAPTCHA_SITE_KEY' ) ) {
-    define( 'RECAPTCHA_SITE_KEY', '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' );
+    define( 'RECAPTCHA_SITE_KEY', '' );
 }
 if ( ! defined( 'RECAPTCHA_SECRET_KEY' ) ) {
-    define( 'RECAPTCHA_SECRET_KEY', '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe' );
+    define( 'RECAPTCHA_SECRET_KEY', '' );
 }
+
+/**
+ * Avisar en el admin si falta configurar reCAPTCHA en wp-config.php.
+ */
+function ajinomoto_mitos_recaptcha_admin_notice() {
+    if ( RECAPTCHA_SITE_KEY === '' || RECAPTCHA_SECRET_KEY === '' ) {
+        echo '<div class="notice notice-warning"><p>' .
+            esc_html__( 'Ajinomoto Mitos: define RECAPTCHA_SITE_KEY y RECAPTCHA_SECRET_KEY en wp-config.php para que el formulario "Cuéntanos tu mito" funcione.', 'ajinomoto-mitos' ) .
+            '</p></div>';
+    }
+}
+add_action( 'admin_notices', 'ajinomoto_mitos_recaptcha_admin_notice' );
 
 /**
  * Encolar los estilos y scripts del tema.
