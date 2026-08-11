@@ -338,28 +338,58 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Fondo Mitos
+    // El swiper del modal vive dentro de un contenedor oculto (display:none)
+    // mientras el modal está cerrado, por lo que Swiper mide ancho 0 si se
+    // inicializa de entrada y desactiva el modo "loop" silenciosamente.
+    // Por eso se inicializa de forma perezosa (al abrir el modal la primera vez)
+    // y se fuerza un recálculo cada vez que se vuelve a abrir.
     const mitoCategoriaImg = document.getElementById('mitoCategoriaImg');
     function actualizarImagenMito(swiper) {
         if (!mitoCategoriaImg) return;
         const slideActivo = swiper.slides[swiper.activeIndex];
-        const img = slideActivo && slideActivo.dataset.mitoImg;
-        if (img) mitoCategoriaImg.src = img;
+        const nuevaSrc = slideActivo && slideActivo.dataset.mitoImg;
+        if (!nuevaSrc || nuevaSrc === mitoCategoriaImg.dataset.currentSrc) return;
+
+        // Muestra el esqueleto/shimmer mientras la imagen nueva precarga,
+        // en vez de dejar la imagen anterior pegada o cambiarla de golpe.
+        mitoCategoriaImg.classList.remove('is-loaded');
+        const preload = new Image();
+        preload.onload = preload.onerror = () => {
+            mitoCategoriaImg.src = nuevaSrc;
+            mitoCategoriaImg.dataset.currentSrc = nuevaSrc;
+            mitoCategoriaImg.classList.add('is-loaded');
+        };
+        preload.src = nuevaSrc;
     }
-    const mitoSwiper = new Swiper('.mitoSwiper', {
-        fadeEffect: { crossFade: true },
-        loop: true,
-        speed: 1200,
-        autoplay: false,
-        allowTouchMove: false,
-        navigation: {
-            nextEl: '.slider-botones .btn.circular.next',
-            prevEl: '.slider-botones .btn.circular.prev'
-        },
-        on: {
-            init: actualizarImagenMito,
-            slideChange: actualizarImagenMito,
-        },
-    });
+    let mitoSwiperInstance = null;
+    function getMitoSwiper() {
+        const el = document.querySelector('.mitoSwiper');
+        if (!el) return null;
+        if (!mitoSwiperInstance) {
+            mitoSwiperInstance = new Swiper(el, {
+                fadeEffect: { crossFade: true },
+                loop: true,
+                speed: 1200,
+                autoplay: false,
+                allowTouchMove: false,
+                navigation: {
+                    nextEl: '.slider-botones .btn.circular.next',
+                    prevEl: '.slider-botones .btn.circular.prev'
+                },
+                on: {
+                    init: actualizarImagenMito,
+                    slideChange: actualizarImagenMito,
+                },
+            });
+        } else {
+            mitoSwiperInstance.update();
+        }
+        return mitoSwiperInstance;
+    }
+    window.irAMito = function (index) {
+        const sw = getMitoSwiper();
+        if (sw) sw.slideToLoop(index, 0);
+    };
 });
 
 // --- RESTO DE EFECTOS INTERACTIVOS GSAP INTACTOS ---

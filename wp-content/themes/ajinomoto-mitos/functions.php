@@ -35,16 +35,21 @@ add_action( 'admin_notices', 'ajinomoto_mitos_recaptcha_admin_notice' );
 /**
  * Encolar los estilos y scripts del tema.
  */
+function ajinomoto_mitos_asset_version( $relative_path ) {
+    $file = get_template_directory() . $relative_path;
+    return file_exists( $file ) ? filemtime( $file ) : '1.0.0';
+}
+
 function ajinomoto_mitos_scripts() {
     // Fuentes de Google y FontAwesome
     wp_enqueue_style( 'ajinomoto-fonts', 'https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap', array(), null );
     wp_enqueue_style( 'font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css', array(), null );
     wp_enqueue_style( 'fancybox-css', 'https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css', array(), null );
-    
+
     // Hojas de estilo locales
     wp_enqueue_style( 'swiper-css', get_template_directory_uri() . '/assets/vendor/swiper/swiper-bundle.min.css', array(), '8.0.0' );
-    wp_enqueue_style( 'ajinomoto-output', get_template_directory_uri() . '/assets/css/output.css', array(), '1.0.0' );
-    wp_enqueue_style( 'ajinomoto-style', get_stylesheet_uri(), array( 'ajinomoto-output' ), '1.0.0' );
+    wp_enqueue_style( 'ajinomoto-output', get_template_directory_uri() . '/assets/css/output.css', array(), ajinomoto_mitos_asset_version( '/assets/css/output.css' ) );
+    wp_enqueue_style( 'ajinomoto-style', get_stylesheet_uri(), array( 'ajinomoto-output' ), ajinomoto_mitos_asset_version( '/style.css' ) );
 
     // Scripts en el Header (AlpineJS defered)
     wp_enqueue_script( 'alpine-focus', 'https://cdn.jsdelivr.net/npm/@alpinejs/focus@3.x.x/dist/cdn.min.js', array(), null, false );
@@ -57,8 +62,8 @@ function ajinomoto_mitos_scripts() {
     
     // Swiper y Custom JS en Footer
     wp_enqueue_script( 'swiper-js', get_template_directory_uri() . '/assets/vendor/swiper/swiper-bundle.min.js', array(), '8.0.0', true );
-    wp_enqueue_script( 'ajinomoto-custom', get_template_directory_uri() . '/assets/custom.js', array( 'gsap', 'swiper-js' ), '1.0.0', true );
-    wp_enqueue_script( 'ajinomoto-forms', get_template_directory_uri() . '/assets/forms.js', array(), '1.0.0', true );
+    wp_enqueue_script( 'ajinomoto-custom', get_template_directory_uri() . '/assets/custom.js', array( 'gsap', 'swiper-js' ), ajinomoto_mitos_asset_version( '/assets/custom.js' ), true );
+    wp_enqueue_script( 'ajinomoto-forms', get_template_directory_uri() . '/assets/forms.js', array(), ajinomoto_mitos_asset_version( '/assets/forms.js' ), true );
 
     // Parámetros globales para el JS de búsqueda y formularios
     wp_localize_script( 'ajinomoto-custom', 'ajinomoto_params', array(

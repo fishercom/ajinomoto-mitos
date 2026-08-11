@@ -107,8 +107,8 @@ if ( $cocina_query->have_posts() ) {
                                     <h5>MITO:</h5>
                                     <p><?php echo esc_html( $mito['title'] ); ?></p>
                                 </div>
-                                <a href="javascript:;" 
-                                   @click="modal = true; $nextTick(() => { const sw = document.querySelector('.mitoSwiper'); if (sw && sw.swiper) { sw.swiper.slideToLoop(<?php echo $index; ?>, 0); } });" 
+                                <a href="javascript:;"
+                                   @click="modal = true; $nextTick(() => { window.irAMito(<?php echo $index; ?>); });"
                                    class="btn circular"></a>
                             </div>
                         </div>
@@ -130,8 +130,9 @@ if ( $cocina_query->have_posts() ) {
                 x-transition:enter="transition ease-out duration-200 delay-100 motion-reduce:transition-opacity"
                 x-transition:enter-start="opacity-0 scale-50" x-transition:enter-end="opacity-100 scale-100"
                 class="content-modal">
-                <div class="imgCategoriaMito">
-                    <img id="mitoCategoriaImg" src="<?php echo esc_url( ! empty( $mitos_list ) ? $mitos_list[0]['mito_img'] : get_template_directory_uri() . '/img/informacion/mito-cocina.jpg' ); ?>" alt="">
+                <?php $primera_img = ! empty( $mitos_list ) ? $mitos_list[0]['mito_img'] : get_template_directory_uri() . '/img/informacion/mito-cocina.jpg'; ?>
+                <div class="imgCategoriaMito imgCategoriaMito--dinamica">
+                    <img id="mitoCategoriaImg" class="is-loaded" src="<?php echo esc_url( $primera_img ); ?>" data-current-src="<?php echo esc_url( $primera_img ); ?>" alt="">
                 </div>
                 <div class="top-modal">
                     <h5>Mitos de la cocina</h5>
