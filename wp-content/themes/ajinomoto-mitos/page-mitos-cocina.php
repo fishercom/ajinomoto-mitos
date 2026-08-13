@@ -75,7 +75,7 @@ if ( $cocina_query->have_posts() ) {
 }
 ?>
     <main class="interna" x-data="{ tab: 'todos', modal: false }">
-        <div class="contenido">
+        <div class="contenido" :class="{ 'contenido-modal-abierto': modal }">
             <div class="intro">
                 <h1>Mitos de la cocina</h1>
                 <p>Creencias populares que se repiten en la cocina de generación en generación. ¿Cuántas son ciertas?
@@ -121,7 +121,7 @@ if ( $cocina_query->have_posts() ) {
             <div class="imgOsito">
                 <img src="<?php echo get_template_directory_uri(); ?>/img/osito-bt-cocina.svg" alt="ositos">
             </div>
-            <a href="javascript:history.back()" class="btn circular"></a>
+            <a href="<?php echo esc_url( home_url( '/' ) ); ?>" onclick="return volverOInicio();" class="btn circular"></a>
         <div x-cloak x-show="modal" x-transition.opacity.duration.500ms @keydown.esc.window="modal = false"
             @click.self="modal = true;" class="modal" role="dialog" aria-modal="true"
             aria-labelledby="defaultModalTitle">

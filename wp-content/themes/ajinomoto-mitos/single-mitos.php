@@ -107,8 +107,8 @@ if ( have_posts() ) :
                         <?php if ( ! empty( $referencias ) ) : ?>
                             <div class="blk gris">
                                 <h5>Referencia: </h5>
-                                <p><?php echo esc_html( $referencias ); ?></p>
-                            </div>    
+                                <?php echo wp_kses_post( wpautop( $referencias ) ); ?>
+                            </div>
                         <?php endif; ?>
 
                         <?php if ( ! empty( $revisor_name ) ) : ?>
@@ -217,7 +217,7 @@ if ( have_posts() ) :
                     <img src="<?php echo get_template_directory_uri(); ?>/img/<?php echo esc_attr( $osito_file ); ?>" alt="ositos">
                 </div>
                 
-                <a href="javascript:history.back()" class="btn circular"></a>
+                <a href="<?php echo esc_url( home_url( '/' ) ); ?>" onclick="return volverOInicio();" class="btn circular"></a>
             </div>
         </main>
 

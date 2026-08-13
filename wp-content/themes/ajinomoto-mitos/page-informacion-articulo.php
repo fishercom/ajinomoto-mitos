@@ -35,13 +35,13 @@ if ( have_posts() ) :
                         <?php the_content(); ?>
                     </div>
                     
-                    <a href="javascript:history.back()" class="btn circular" style="margin-left: 0 !important;"></a>
+                    <a href="<?php echo esc_url( home_url( '/' ) ); ?>" onclick="return volverOInicio();" class="btn circular" style="margin-left: 0 !important;"></a>
                 </div>
                 
                 <div class="imgOsito">
                     <img src="<?php echo get_template_directory_uri(); ?>/img/ositos-bt-info.svg" alt="ositos">
                 </div>
-                <a href="javascript:history.back()" class="btn circular"></a>
+                <a href="<?php echo esc_url( home_url( '/' ) ); ?>" onclick="return volverOInicio();" class="btn circular"></a>
             </div>
         </main>
 

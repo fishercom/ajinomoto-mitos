@@ -2178,12 +2178,13 @@ section .contenido{
   --tw-bg-opacity: 1;
   background-color: rgb(243 244 246 / var(--tw-bg-opacity, 1));
   padding: 1.5rem;
-  padding-bottom: 3.5rem;
+  padding-bottom: 4.5rem;
 }
 
 @media (min-width: 768px){
   .informacion .item .descripcion{
     padding: 2.5rem;
+    padding-bottom: 4.5rem;
   }
 }
 
@@ -2967,6 +2968,14 @@ footer .contenido{
 }
 
 /* MODAL */
+
+/* .contenido crea su propio stacking context (position:relative; z-index:1),
+   por lo que el z-index:9999 del .modal solo compite dentro de ese contexto y
+   queda por debajo del <header> (z-index:32). Mientras el modal está abierto
+   se sube el z-index de .contenido para que gane esa comparación. */
+.contenido.contenido-modal-abierto{
+  z-index: 40;
+}
 
 .modal{
   position: fixed;

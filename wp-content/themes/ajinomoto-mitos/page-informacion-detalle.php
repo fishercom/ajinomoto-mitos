@@ -58,7 +58,7 @@ if ( have_posts() ) :
                                 </div>
                             </div>
                         </div>
-                        <a href="javascript:history.back()" class="btn circular pIzq"></a>
+                        <a href="<?php echo esc_url( home_url( '/' ) ); ?>" onclick="return volverOInicio();" class="btn circular pIzq"></a>
                     </div>
 
                     <!-- Listado de páginas nietas (Sub-artículos) -->
@@ -109,7 +109,7 @@ if ( have_posts() ) :
                 <div class="imgOsito">
                     <img src="<?php echo get_template_directory_uri(); ?>/img/ositos-bt-info.svg" alt="ositos">
                 </div>
-                <a href="javascript:history.back()" class="btn circular"></a>
+                <a href="<?php echo esc_url( home_url( '/' ) ); ?>" onclick="return volverOInicio();" class="btn circular"></a>
             </div>
         </main>
 

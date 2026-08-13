@@ -1,3 +1,14 @@
+// Botones circulares de "volver": si el navegador trae una página previa en el
+// referrer se usa history.back(); si no (llegada directa/nueva pestaña), se deja
+// que el <a> siga su href normal (home_url) en vez de quedar como botón muerto.
+function volverOInicio() {
+    if (document.referrer) {
+        history.back();
+        return false;
+    }
+    return true;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 
     let timeoutSalidaFondo = null;

@@ -29,8 +29,8 @@ if ( have_posts() ) :
         <main class="interna">
             <div class="contenido">            
                 <div class="bloqueBlanco profesional">
-                    <a href="javascript:history.back()" class="btn circular"></a>
-                    
+                    <a href="<?php echo esc_url( home_url( '/' ) ); ?>" onclick="return volverOInicio();" class="btn circular"></a>
+
                     <div class="personal gr">
                         <img src="<?php echo esc_url( $photo_url ); ?>" alt="<?php echo esc_attr( get_the_title() ); ?>">
                         <div class="datos">
@@ -100,7 +100,7 @@ if ( have_posts() ) :
                     <img src="<?php echo get_template_directory_uri(); ?>/img/osito-bt-cocina.svg" alt="ositos">
                 </div>    
                 
-                <a href="javascript:history.back()" class="btn circular"></a>        
+                <a href="<?php echo esc_url( home_url( '/' ) ); ?>" onclick="return volverOInicio();" class="btn circular"></a>
             </div>
         </main>
 

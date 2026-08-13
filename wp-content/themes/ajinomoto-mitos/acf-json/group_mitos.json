@@ -101,7 +101,7 @@
             "key": "field_referencias",
             "label": "Referencias",
             "name": "referencias",
-            "type": "textarea",
+            "type": "wysiwyg",
             "instructions": "Bibliografía y fuentes del mito.",
             "required": 0,
             "conditional_logic": 0,
@@ -111,10 +111,10 @@
                 "id": ""
             },
             "default_value": "",
-            "placeholder": "",
-            "maxlength": "",
-            "rows": "",
-            "new_lines": ""
+            "tabs": "all",
+            "toolbar": "full",
+            "media_upload": 1,
+            "delay": 0
         },
         {
             "key": "field_revisor",

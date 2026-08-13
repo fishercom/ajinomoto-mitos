@@ -30,7 +30,7 @@ get_header();
         <div class="imgOsito">
             <img src="<?php echo get_template_directory_uri(); ?>/img/ositos-bt-info.svg" alt="ositos">
         </div>
-        <a href="javascript:history.back()" class="btn circular"></a>
+        <a href="<?php echo esc_url( home_url( '/' ) ); ?>" onclick="return volverOInicio();" class="btn circular"></a>
     </div>
 </main>
 
