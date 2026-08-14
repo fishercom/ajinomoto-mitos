@@ -564,6 +564,10 @@ video {
   display: flex;
 }
 
+.table{
+  display: table;
+}
+
 .scale-100{
   --tw-scale-x: 1;
   --tw-scale-y: 1;
@@ -578,6 +582,10 @@ video {
 
 .transform{
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.border{
+  border-width: 1px;
 }
 
 .bg-red-500{
@@ -925,6 +933,7 @@ header .contenido .main-menu{
   margin-top: 1rem;
   display: none;
   align-items: center;
+  gap: 0.5rem;
   border-radius: 50px;
   opacity: 0;
 }
@@ -2178,13 +2187,13 @@ section .contenido{
   --tw-bg-opacity: 1;
   background-color: rgb(243 244 246 / var(--tw-bg-opacity, 1));
   padding: 1.5rem;
-  padding-bottom: 4.5rem;
+  padding-bottom: 4rem;
 }
 
 @media (min-width: 768px){
   .informacion .item .descripcion{
     padding: 2.5rem;
-    padding-bottom: 4.5rem;
+    padding-bottom: 3.5rem;
   }
 }
 
@@ -2274,10 +2283,13 @@ section .contenido{
   z-index: 10;
   height: 100%;
   width: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
 }
 
 @media (min-width: 768px){
   .informacion .foto img{
+    min-height: 250px;
     border-radius: 1.5rem;
   }
 }
@@ -2497,6 +2509,7 @@ section .contenido{
   margin: auto;
   margin-top: 1rem;
   margin-bottom: 1rem;
+  width: 100%;
   border-radius: 1.5rem;
   padding-left: 0px;
   padding-right: 0px;
@@ -2506,6 +2519,12 @@ section .contenido{
   .mitos .informacion .item{
     margin-top: 1.25rem;
     margin-bottom: 1.25rem;
+    width: 48%;
+  }
+}
+
+@media (min-width: 1024px){
+  .mitos .informacion .item{
     width: 29%;
   }
 }
@@ -2553,6 +2572,7 @@ section .contenido{
 
 .mitos .informacion .item .descripcion{
   position: relative;
+  min-height: 120px;
   background-color: transparent;
   padding: 1rem;
 }
@@ -2730,6 +2750,7 @@ footer::before{
   display: block;
   height: 100%;
   width: 100%;
+  background-size: cover;
   padding-top: 3rem;
 }
 
@@ -2877,6 +2898,8 @@ ul.opciones li{
   width: 80%;
   padding-top: 2rem;
   padding-bottom: 2rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
 }
 
 @media (min-width: 768px){
@@ -2946,6 +2969,7 @@ footer .contenido{
 
 /* Estado de carga (shimmer) exclusivo del popup de Mitos de la Cocina,
    mientras la imagen del mito activo precarga en el swiper del modal. */
+
 .imgCategoriaMito--dinamica{
   overflow: hidden;
   background: linear-gradient(90deg, #e8e8e8 25%, #f5f5f5 50%, #e8e8e8 75%);
@@ -2963,19 +2987,16 @@ footer .contenido{
 }
 
 @keyframes mitoImgSkeleton{
-  0%{ background-position: 200% 0; }
-  100%{ background-position: -200% 0; }
+  0%{
+    background-position: 200% 0;
+  }
+
+  100%{
+    background-position: -200% 0;
+  }
 }
 
 /* MODAL */
-
-/* .contenido crea su propio stacking context (position:relative; z-index:1),
-   por lo que el z-index:9999 del .modal solo compite dentro de ese contexto y
-   queda por debajo del <header> (z-index:32). Mientras el modal está abierto
-   se sube el z-index de .contenido para que gane esa comparación. */
-.contenido.contenido-modal-abierto{
-  z-index: 40;
-}
 
 .modal{
   position: fixed;
@@ -3182,5 +3203,13 @@ circle.nodo-pulso {
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;
   }
+}
+
+/* .contenido crea su propio stacking context (position:relative; z-index:1),
+   por lo que el z-index:9999 del .modal solo compite dentro de ese contexto y
+   queda por debajo del <header> (z-index:32). Mientras el modal está abierto
+   se sube el z-index de .contenido para que gane esa comparación. */
+.contenido.contenido-modal-abierto{
+  z-index: 40;
 }
 

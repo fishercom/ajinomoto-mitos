@@ -10,6 +10,7 @@ wp-content/blogs.dir/
 wp-content/cache/
 wp-content/backups/
 wp-content/plugins/
+wp-content/languages/
 
 # Theme uploads/backups
 *.log

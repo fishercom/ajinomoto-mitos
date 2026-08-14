@@ -212,6 +212,83 @@ function ajinomoto_mitos_register_taxonomies() {
 add_action( 'init', 'ajinomoto_mitos_register_taxonomies' );
 
 /**
+ * Página de ajustes para configurar los destinatarios del correo de "Cuéntanos tu mito".
+ * Usa la Settings API nativa de WordPress: las páginas de opciones de ACF son una
+ * función exclusiva de ACF PRO y este sitio usa la versión gratuita.
+ */
+function ajinomoto_mitos_correo_settings_menu() {
+    add_menu_page(
+        'Configuración de Correo',
+        'Correo Mitos',
+        'manage_options',
+        'ajinomoto-mitos-correo',
+        'ajinomoto_mitos_correo_settings_page',
+        'dashicons-email-alt'
+    );
+}
+add_action( 'admin_menu', 'ajinomoto_mitos_correo_settings_menu' );
+
+function ajinomoto_mitos_sanitize_destinatarios( $value ) {
+    $emails = preg_split( '/[,;\r\n]+/', (string) $value );
+    $emails = array_filter( array_map( 'trim', $emails ), 'is_email' );
+    return implode( ', ', array_unique( $emails ) );
+}
+
+function ajinomoto_mitos_correo_settings_init() {
+    register_setting( 'ajinomoto_mitos_correo', 'ajinomoto_mitos_destinatarios_mito', array(
+        'sanitize_callback' => 'ajinomoto_mitos_sanitize_destinatarios',
+        'default'           => '',
+    ) );
+
+    add_settings_section(
+        'ajinomoto_mitos_correo_section',
+        'Destinatarios',
+        function () {
+            echo '<p>Uno o más correos que recibirán la notificación cuando alguien envíe un mito. Sepáralos con comas o líneas nuevas. Si se deja vacío, se usará el correo de administrador de WordPress (Ajustes &gt; Generales).</p>';
+        },
+        'ajinomoto-mitos-correo'
+    );
+
+    add_settings_field(
+        'ajinomoto_mitos_destinatarios_mito',
+        'Destinatarios del correo',
+        function () {
+            $value = get_option( 'ajinomoto_mitos_destinatarios_mito', '' );
+            echo '<textarea name="ajinomoto_mitos_destinatarios_mito" rows="4" cols="50" placeholder="correo1@ejemplo.com, correo2@ejemplo.com">' . esc_textarea( $value ) . '</textarea>';
+        },
+        'ajinomoto-mitos-correo',
+        'ajinomoto_mitos_correo_section'
+    );
+}
+add_action( 'admin_init', 'ajinomoto_mitos_correo_settings_init' );
+
+function ajinomoto_mitos_correo_settings_page() {
+    ?>
+    <div class="wrap">
+        <h1>Configuración de Correo - Mitos</h1>
+        <form action="options.php" method="post">
+            <?php
+            settings_fields( 'ajinomoto_mitos_correo' );
+            do_settings_sections( 'ajinomoto-mitos-correo' );
+            submit_button( 'Guardar cambios' );
+            ?>
+        </form>
+    </div>
+    <?php
+}
+
+/**
+ * Renderizar la plantilla HTML del correo de notificación de un mito recibido.
+ */
+function ajinomoto_mitos_get_mail_mito_html( $nombre, $dni, $email, $celular, $mensaje_mito ) {
+    $cabecera_url = get_template_directory_uri() . '/assets/img/mail/cabecera.png';
+
+    ob_start();
+    include get_template_directory() . '/template-parts/mail-mito.php';
+    return ob_get_clean();
+}
+
+/**
  * Procesar el envío del formulario 'Cuéntanos tu mito'.
  */
 function handle_enviar_mito() {
@@ -273,23 +350,21 @@ function handle_enviar_mito() {
         wp_send_json_error( array( 'message' => 'Por favor, ingresa un correo electrónico válido.' ) );
     }
 
-    // Correo de destino del administrador
+    // Correo(s) de destino: configurables en wp-admin > Correo Mitos; si no hay
+    // ninguno válido, se usa el correo de administrador de WordPress como respaldo.
     $to = get_option( 'admin_email' );
+    $destinatarios_raw = get_option( 'ajinomoto_mitos_destinatarios_mito', '' );
+    if ( ! empty( $destinatarios_raw ) ) {
+        $destinatarios = array_filter( array_map( 'trim', explode( ',', $destinatarios_raw ) ), 'is_email' );
+        if ( ! empty( $destinatarios ) ) {
+            $to = array_values( $destinatarios );
+        }
+    }
     $subject = 'Nuevo Mito Recibido de: ' . $nombre;
     
     // Contenido del correo en formato HTML
     $headers = array( 'Content-Type: text/html; charset=UTF-8' );
-    $body = "
-    <h2>Nuevo Mito Enviado por un Usuario</h2>
-    <p><strong>Nombres y Apellidos:</strong> {$nombre}</p>
-    <p><strong>DNI:</strong> {$dni}</p>
-    <p><strong>Correo Electrónico:</strong> {$email}</p>
-    <p><strong>Celular:</strong> {$celular}</p>
-    <p><strong>Mito Propuesto:</strong></p>
-    <p style='background:#f4f4f4; padding: 15px; border-left: 4px solid #ff0000; font-style: italic;'>
-        " . nl2br( esc_html( $mensaje_mito ) ) . "
-    </p>
-    ";
+    $body = ajinomoto_mitos_get_mail_mito_html( $nombre, $dni, $email, $celular, $mensaje_mito );
 
     // Guardar en la base de datos como post de tipo 'mitos_recibidos'
     $post_id = wp_insert_post( array(
