@@ -235,47 +235,97 @@ function ajinomoto_mitos_sanitize_destinatarios( $value ) {
 }
 
 /**
- * Redes sociales del pie de página: opción => etiqueta. El icono de cada red
- * es el archivo img/ic-{red}.svg del tema.
+ * Redes sociales del pie de página: lista de items { nombre, url, icono } donde
+ * "icono" es el ID de un adjunto de la biblioteca de medios.
  */
 function ajinomoto_mitos_get_redes() {
-    return array(
-        'tiktok'    => 'TikTok',
-        'facebook'  => 'Facebook',
-        'instagram' => 'Instagram',
-        'youtube'   => 'YouTube',
-    );
+    $items = get_option( 'ajinomoto_mitos_redes', array() );
+    return is_array( $items ) ? $items : array();
+}
+
+function ajinomoto_mitos_sanitize_redes( $value ) {
+    $items = array();
+    if ( ! is_array( $value ) ) {
+        return $items;
+    }
+    foreach ( $value as $row ) {
+        $url = is_array( $row ) ? esc_url_raw( trim( $row['url'] ?? '' ) ) : '';
+        if ( ! $url ) {
+            continue;
+        }
+        $items[] = array(
+            'nombre' => sanitize_text_field( $row['nombre'] ?? '' ),
+            'url'    => $url,
+            'icono'  => absint( $row['icono'] ?? 0 ),
+        );
+    }
+    return $items;
+}
+
+/**
+ * Los iconos de las redes se suben como SVG; WordPress los bloquea por defecto,
+ * así que se permiten solo para administradores.
+ */
+function ajinomoto_mitos_permitir_svg( $mimes ) {
+    if ( current_user_can( 'manage_options' ) ) {
+        $mimes['svg'] = 'image/svg+xml';
+    }
+    return $mimes;
+}
+add_filter( 'upload_mimes', 'ajinomoto_mitos_permitir_svg' );
+
+function ajinomoto_mitos_verificar_svg( $data, $file, $filename ) {
+    if ( empty( $data['ext'] ) && current_user_can( 'manage_options' )
+        && 'svg' === strtolower( pathinfo( $filename, PATHINFO_EXTENSION ) )
+        && false !== strpos( (string) file_get_contents( $file ), '<svg' ) ) {
+        $data = array( 'ext' => 'svg', 'type' => 'image/svg+xml', 'proper_filename' => false );
+    }
+    return $data;
+}
+add_filter( 'wp_check_filetype_and_ext', 'ajinomoto_mitos_verificar_svg', 10, 3 );
+
+function ajinomoto_mitos_render_red_row( $index, $item = array() ) {
+    $item     = wp_parse_args( $item, array( 'nombre' => '', 'url' => '', 'icono' => 0 ) );
+    $name     = 'ajinomoto_mitos_redes[' . $index . ']';
+    $icon_url = $item['icono'] ? wp_get_attachment_url( $item['icono'] ) : '';
+    ?>
+    <div class="mitos-red">
+        <span class="mitos-red__handle dashicons dashicons-menu" title="Arrastrar para ordenar"></span>
+        <div class="mitos-red__icono">
+            <span class="mitos-red__preview"<?php echo $icon_url ? '' : ' hidden'; ?>><img src="<?php echo esc_url( $icon_url ); ?>" alt=""></span>
+            <input type="hidden" class="mitos-red__icono-id" name="<?php echo esc_attr( $name ); ?>[icono]" value="<?php echo esc_attr( $item['icono'] ); ?>">
+            <button type="button" class="button mitos-red__elegir">Elegir icono</button>
+            <button type="button" class="button-link mitos-red__quitar-icono"<?php echo $icon_url ? '' : ' hidden'; ?>>Quitar</button>
+        </div>
+        <input type="text" class="regular-text" name="<?php echo esc_attr( $name ); ?>[nombre]" value="<?php echo esc_attr( $item['nombre'] ); ?>" placeholder="Nombre (ej. Instagram)">
+        <input type="url" class="regular-text" name="<?php echo esc_attr( $name ); ?>[url]" value="<?php echo esc_attr( $item['url'] ); ?>" placeholder="https://">
+        <button type="button" class="button-link button-link-delete mitos-red__eliminar">Eliminar</button>
+    </div>
+    <?php
 }
 
 function ajinomoto_mitos_correo_settings_init() {
-    foreach ( array_keys( ajinomoto_mitos_get_redes() ) as $red ) {
-        register_setting( 'ajinomoto_mitos_correo', 'ajinomoto_mitos_red_' . $red, array(
-            'sanitize_callback' => 'esc_url_raw',
-            'default'           => '',
-        ) );
-    }
+    register_setting( 'ajinomoto_mitos_correo', 'ajinomoto_mitos_redes', array(
+        'sanitize_callback' => 'ajinomoto_mitos_sanitize_redes',
+    ) );
 
     add_settings_section(
         'ajinomoto_mitos_redes_section',
         'Redes sociales',
         function () {
-            echo '<p>Enlaces de los iconos de redes sociales del pie de página. Si dejas un campo vacío, ese icono no se mostrará.</p>';
+            echo '<p>Iconos de redes sociales del pie de página. Elige el icono desde la biblioteca de medios, agrega el enlace y arrastra para cambiar el orden. Los items sin enlace se descartan al guardar.</p>';
+            echo '<div id="mitos-redes-lista">';
+            foreach ( ajinomoto_mitos_get_redes() as $i => $item ) {
+                ajinomoto_mitos_render_red_row( $i, $item );
+            }
+            echo '</div>';
+            echo '<p><button type="button" class="button" id="mitos-redes-agregar">Agregar red social</button></p>';
+            echo '<script type="text/template" id="mitos-redes-plantilla">';
+            ajinomoto_mitos_render_red_row( '__INDEX__' );
+            echo '</script>';
         },
         'ajinomoto-mitos-correo'
     );
-
-    foreach ( ajinomoto_mitos_get_redes() as $red => $label ) {
-        add_settings_field(
-            'ajinomoto_mitos_red_' . $red,
-            $label,
-            function () use ( $red ) {
-                $name = 'ajinomoto_mitos_red_' . $red;
-                echo '<input type="url" class="regular-text" name="' . esc_attr( $name ) . '" value="' . esc_attr( get_option( $name, '' ) ) . '" placeholder="https://">';
-            },
-            'ajinomoto-mitos-correo',
-            'ajinomoto_mitos_redes_section'
-        );
-    }
 
     register_setting( 'ajinomoto_mitos_correo', 'ajinomoto_mitos_destinatarios_mito', array(
         'sanitize_callback' => 'ajinomoto_mitos_sanitize_destinatarios',
@@ -303,6 +353,24 @@ function ajinomoto_mitos_correo_settings_init() {
     );
 }
 add_action( 'admin_init', 'ajinomoto_mitos_correo_settings_init' );
+
+function ajinomoto_mitos_admin_scripts( $hook ) {
+    if ( 'toplevel_page_ajinomoto-mitos-correo' !== $hook ) {
+        return;
+    }
+    wp_enqueue_media();
+    wp_enqueue_script( 'ajinomoto-admin-redes', get_template_directory_uri() . '/assets/admin-redes.js', array( 'jquery', 'jquery-ui-sortable' ), ajinomoto_mitos_asset_version( '/assets/admin-redes.js' ), true );
+    wp_add_inline_style( 'wp-admin', '
+        .mitos-red{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#fff;border:1px solid #c3c4c7;padding:10px 12px;margin-bottom:8px;max-width:960px}
+        .mitos-red__handle{cursor:move;color:#787c82}
+        .mitos-red__icono{display:flex;align-items:center;gap:8px;min-width:230px}
+        .mitos-red__preview{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;background:#50575e;border-radius:4px}
+        .mitos-red__preview[hidden]{display:none}
+        .mitos-red__preview img{width:24px;height:24px;object-fit:contain}
+        .mitos-red-placeholder{height:58px;max-width:960px;margin-bottom:8px;border:1px dashed #8c8f94}
+    ' );
+}
+add_action( 'admin_enqueue_scripts', 'ajinomoto_mitos_admin_scripts' );
 
 function ajinomoto_mitos_correo_settings_page() {
     ?>

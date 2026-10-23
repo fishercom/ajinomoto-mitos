@@ -50,18 +50,21 @@ $footer_class = $is_home_footer ? 'class="home"' : '';
                 ?>
                 
                 <?php
-                $redes = array();
-                foreach ( ajinomoto_mitos_get_redes() as $red => $label ) {
-                    $url = get_option( 'ajinomoto_mitos_red_' . $red, '' );
-                    if ( $url ) {
-                        $redes[ $red ] = $url;
-                    }
-                }
+                $redes = ajinomoto_mitos_get_redes();
                 ?>
                 <?php if ( $redes ) : ?>
                     <ul class="redes">
-                        <?php foreach ( $redes as $red => $url ) : ?>
-                            <li><a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener noreferrer"><img src="<?php echo get_template_directory_uri(); ?>/img/ic-<?php echo esc_attr( $red ); ?>.svg" alt="<?php echo esc_attr( $red ); ?>"></a></li>
+                        <?php foreach ( $redes as $red ) :
+                            $icono_url = $red['icono'] ? wp_get_attachment_url( $red['icono'] ) : '';
+                            $nombre    = $red['nombre'] ? $red['nombre'] : wp_parse_url( $red['url'], PHP_URL_HOST );
+                            ?>
+                            <li><a href="<?php echo esc_url( $red['url'] ); ?>" target="_blank" rel="noopener noreferrer"><?php
+                                if ( $icono_url ) {
+                                    echo '<img src="' . esc_url( $icono_url ) . '" alt="' . esc_attr( $nombre ) . '">';
+                                } else {
+                                    echo esc_html( $nombre );
+                                }
+                            ?></a></li>
                         <?php endforeach; ?>
                     </ul>
                 <?php endif; ?>
