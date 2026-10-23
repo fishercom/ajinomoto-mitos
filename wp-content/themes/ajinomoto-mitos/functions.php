@@ -218,8 +218,8 @@ add_action( 'init', 'ajinomoto_mitos_register_taxonomies' );
  */
 function ajinomoto_mitos_correo_settings_menu() {
     add_menu_page(
-        'Configuración de Correo',
-        'Correo Mitos',
+        'Configuración Mitos',
+        'Ajustes Mitos',
         'manage_options',
         'ajinomoto-mitos-correo',
         'ajinomoto_mitos_correo_settings_page',
@@ -234,7 +234,49 @@ function ajinomoto_mitos_sanitize_destinatarios( $value ) {
     return implode( ', ', array_unique( $emails ) );
 }
 
+/**
+ * Redes sociales del pie de página: opción => etiqueta. El icono de cada red
+ * es el archivo img/ic-{red}.svg del tema.
+ */
+function ajinomoto_mitos_get_redes() {
+    return array(
+        'tiktok'    => 'TikTok',
+        'facebook'  => 'Facebook',
+        'instagram' => 'Instagram',
+        'youtube'   => 'YouTube',
+    );
+}
+
 function ajinomoto_mitos_correo_settings_init() {
+    foreach ( array_keys( ajinomoto_mitos_get_redes() ) as $red ) {
+        register_setting( 'ajinomoto_mitos_correo', 'ajinomoto_mitos_red_' . $red, array(
+            'sanitize_callback' => 'esc_url_raw',
+            'default'           => '',
+        ) );
+    }
+
+    add_settings_section(
+        'ajinomoto_mitos_redes_section',
+        'Redes sociales',
+        function () {
+            echo '<p>Enlaces de los iconos de redes sociales del pie de página. Si dejas un campo vacío, ese icono no se mostrará.</p>';
+        },
+        'ajinomoto-mitos-correo'
+    );
+
+    foreach ( ajinomoto_mitos_get_redes() as $red => $label ) {
+        add_settings_field(
+            'ajinomoto_mitos_red_' . $red,
+            $label,
+            function () use ( $red ) {
+                $name = 'ajinomoto_mitos_red_' . $red;
+                echo '<input type="url" class="regular-text" name="' . esc_attr( $name ) . '" value="' . esc_attr( get_option( $name, '' ) ) . '" placeholder="https://">';
+            },
+            'ajinomoto-mitos-correo',
+            'ajinomoto_mitos_redes_section'
+        );
+    }
+
     register_setting( 'ajinomoto_mitos_correo', 'ajinomoto_mitos_destinatarios_mito', array(
         'sanitize_callback' => 'ajinomoto_mitos_sanitize_destinatarios',
         'default'           => '',
@@ -265,7 +307,7 @@ add_action( 'admin_init', 'ajinomoto_mitos_correo_settings_init' );
 function ajinomoto_mitos_correo_settings_page() {
     ?>
     <div class="wrap">
-        <h1>Configuración de Correo - Mitos</h1>
+        <h1>Configuración - Mitos</h1>
         <form action="options.php" method="post">
             <?php
             settings_fields( 'ajinomoto_mitos_correo' );

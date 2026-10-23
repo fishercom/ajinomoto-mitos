@@ -49,12 +49,22 @@ $footer_class = $is_home_footer ? 'class="home"' : '';
                 }
                 ?>
                 
-                <ul class="redes">
-                    <li><a href="https://tiktok.com" target="_blank"><img src="<?php echo get_template_directory_uri(); ?>/img/ic-tiktok.svg" alt="tiktok"></a></li>
-                    <li><a href="https://facebook.com" target="_blank"><img src="<?php echo get_template_directory_uri(); ?>/img/ic-facebook.svg" alt="facebook"></a></li>
-                    <li><a href="https://instagram.com" target="_blank"><img src="<?php echo get_template_directory_uri(); ?>/img/ic-instagram.svg" alt="instagram"></a></li>
-                    <li><a href="https://youtube.com" target="_blank"><img src="<?php echo get_template_directory_uri(); ?>/img/ic-youtube.svg" alt="youtube"></a></li>
-                </ul>                
+                <?php
+                $redes = array();
+                foreach ( ajinomoto_mitos_get_redes() as $red => $label ) {
+                    $url = get_option( 'ajinomoto_mitos_red_' . $red, '' );
+                    if ( $url ) {
+                        $redes[ $red ] = $url;
+                    }
+                }
+                ?>
+                <?php if ( $redes ) : ?>
+                    <ul class="redes">
+                        <?php foreach ( $redes as $red => $url ) : ?>
+                            <li><a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener noreferrer"><img src="<?php echo get_template_directory_uri(); ?>/img/ic-<?php echo esc_attr( $red ); ?>.svg" alt="<?php echo esc_attr( $red ); ?>"></a></li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
             </div>
             
             <ul class="opciones">
