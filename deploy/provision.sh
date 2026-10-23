@@ -3,14 +3,14 @@
 # Es idempotente: puede ejecutarse varias veces sin pisar wp-config.php ni uploads.
 #
 # Uso (en el servidor, desde la carpeta deploy/):
-#   sudo SITE_URL=http://13.218.214.215 DB_HOST=... DB_NAME=... DB_USER=... ./provision.sh
+#   sudo SITE_URL=https://mitosdelsabor.pe DB_HOST=... DB_NAME=... DB_USER=... ./provision.sh
 # La contraseña de la base se solicita por prompt (o con DB_PASSWORD en el entorno).
 # Opcional: PHP_VERSION (por defecto 8.3, de Ubuntu; otras versiones usan el PPA ondrej/php) y PLUGINS.
 set -euo pipefail
 
 [ "$(id -u)" -eq 0 ] || { echo "Ejecutar con sudo." >&2; exit 1; }
 
-: "${SITE_URL:?Falta SITE_URL (ej. http://13.218.214.215)}"
+: "${SITE_URL:?Falta SITE_URL (ej. https://mitosdelsabor.pe)}"
 : "${DB_HOST:?Falta DB_HOST}"
 : "${DB_NAME:?Falta DB_NAME}"
 : "${DB_USER:?Falta DB_USER}"
@@ -107,6 +107,11 @@ $salts
 define( 'WP_HOME', $(php_str "$SITE_URL") );
 define( 'WP_SITEURL', $(php_str "$SITE_URL") );
 define( 'WP_DEBUG', false );
+
+// HTTPS termina en el Application Load Balancer; WordPress debe saber que la petición original era segura
+if ( ( \$_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '' ) === 'https' ) {
+	\$_SERVER['HTTPS'] = 'on';
+}
 define( 'DISALLOW_FILE_EDIT', true );
 define( 'FS_METHOD', 'direct' );
 

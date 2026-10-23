@@ -11,14 +11,17 @@ Hay que ejecutarlo con acceso al servidor (SSH o `aws ssm start-session`):
 scp -i ~/.ssh/mitosdelsabor.pem -r deploy ubuntu@13.218.214.215:~/
 ssh -i ~/.ssh/mitosdelsabor.pem ubuntu@13.218.214.215
 cd ~/deploy
-sudo SITE_URL=http://13.218.214.215 \
+sudo SITE_URL=https://mitosdelsabor.pe \
      DB_HOST=mitosverdadesdb.cohwqsywee0c.us-east-1.rds.amazonaws.com \
      DB_NAME=mydbmitosverdades DB_USER=admin ./provision.sh
 ```
 
 La contraseña de la base se pide por prompt y solo queda en `/var/www/mitos/wp-config.php` (640).
 
-Después: abrir los puertos 80/443 en el Security Group e importar la base de datos y `wp-content/uploads`.
+El HTTPS de https://mitosdelsabor.pe termina en el Application Load Balancer (certificado ACM), así que el servidor solo recibe HTTP en el puerto 80.
+Conviene limitar ese puerto 80 al Security Group del balanceador, no a `0.0.0.0/0`.
+
+Después: importar la base de datos y `wp-content/uploads`.
 
 ## 2. Configurar AWS y GitHub
 
