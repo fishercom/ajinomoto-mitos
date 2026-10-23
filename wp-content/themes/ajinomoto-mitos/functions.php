@@ -274,6 +274,10 @@ function ajinomoto_mitos_permitir_svg( $mimes ) {
 }
 add_filter( 'upload_mimes', 'ajinomoto_mitos_permitir_svg' );
 
+// El procesamiento de imágenes en el navegador (WP 7.1+, solo en HTTPS) falla con los SVG:
+// la subida se queda sin llegar al servidor. Se usa el procesamiento clásico en el servidor.
+add_filter( 'wp_client_side_media_processing_enabled', '__return_false' );
+
 function ajinomoto_mitos_verificar_svg( $data, $file, $filename ) {
     if ( empty( $data['ext'] ) && current_user_can( 'manage_options' )
         && 'svg' === strtolower( pathinfo( $filename, PATHINFO_EXTENSION ) )
