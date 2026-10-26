@@ -5,7 +5,7 @@
 # Uso (en el servidor, desde la carpeta deploy/):
 #   sudo SITE_URL=https://mitosdelsabor.pe DB_HOST=... DB_NAME=... DB_USER=... ./provision.sh
 # La contraseña de la base se solicita por prompt (o con DB_PASSWORD en el entorno).
-# Opcional: PHP_VERSION (por defecto 8.3, de Ubuntu; otras versiones usan el PPA ondrej/php) y PLUGINS.
+# Opcional: PHP_VERSION (por defecto 8.4, del PPA ondrej/php; 8.3 viene de Ubuntu) y PLUGINS.
 set -euo pipefail
 
 [ "$(id -u)" -eq 0 ] || { echo "Ejecutar con sudo." >&2; exit 1; }
@@ -18,7 +18,7 @@ if [ -z "${DB_PASSWORD:-}" ]; then
   read -rsp "Contraseña de la base de datos: " DB_PASSWORD; echo
 fi
 
-PHP_VERSION="${PHP_VERSION:-8.3}"
+PHP_VERSION="${PHP_VERSION:-8.4}"
 WEBROOT=/var/www/mitos
 THEME=ajinomoto-mitos
 PLUGINS="${PLUGINS:-advanced-custom-fields custom-post-type-ui wp-mail-smtp wpforms-lite akismet}"
