@@ -3218,6 +3218,7 @@ circle.nodo-pulso {
   height: 120px;
   overflow-y: auto;
   padding-right: 12px;
+  overflow-wrap: anywhere;
 }
 .txt-scroll::-webkit-scrollbar-thumb {
   background: #ccc;
