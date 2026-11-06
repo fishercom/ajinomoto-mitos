@@ -3233,3 +3233,11 @@ circle.nodo-pulso {
   border-radius: 8px;
   width: 12px;
 }
+/* Firefox no soporta ::-webkit-scrollbar; se usa el estándar solo ahí,
+   porque en Chrome scrollbar-color anula los estilos ::-webkit-scrollbar. */
+@supports not selector(::-webkit-scrollbar) {
+  .txt-scroll{
+    scrollbar-width: thin;
+    scrollbar-color: #ccc #fcfcfc;
+  }
+}
