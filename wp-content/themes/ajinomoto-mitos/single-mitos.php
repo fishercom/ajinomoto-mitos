@@ -106,8 +106,10 @@ if ( have_posts() ) :
                     <div class="blCajas">
                         <?php if ( ! empty( $referencias ) ) : ?>
                             <div class="blk gris">
-                                <h5>Referencia: </h5>
-                                <?php echo wp_kses_post( wpautop( $referencias ) ); ?>
+                                <div class="txt-scroll">
+                                    <h5>Referencia: </h5>
+                                    <?php echo wp_kses_post( wpautop( $referencias ) ); ?>
+                                </div>
                             </div>
                         <?php endif; ?>
 

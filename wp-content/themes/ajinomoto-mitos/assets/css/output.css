@@ -3213,3 +3213,22 @@ circle.nodo-pulso {
   z-index: 40;
 }
 
+
+.txt-scroll{
+  height: 120px;
+  overflow-y: auto;
+  padding-right: 12px;
+}
+.txt-scroll::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 8px;
+}
+.txt-scroll::-webkit-scrollbar-track {
+  background: #fcfcfc;
+  border-radius: 8px;
+}
+.txt-scroll::-webkit-scrollbar {
+  background: #fcfcfc;
+  border-radius: 8px;
+  width: 12px;
+}
