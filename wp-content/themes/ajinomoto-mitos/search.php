@@ -18,7 +18,7 @@ $end_result = min( $paged * $posts_per_page, $total_results );
 <main class="interna">
     <div class="contenido">
         <div class="intro">
-            <h1>Resultado de búsqueda</h1>            
+            <h1>Resultados de búsqueda</h1>            
         </div>
         
         <?php if ( have_posts() ) : ?>
