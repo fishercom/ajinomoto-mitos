@@ -99,3 +99,22 @@ main.home h1 {
   border: 1px solid #b3b3b3;
   border-radius: 9999px;
 }
+
+/* ==========================================================================
+   Títulos de páginas internas según la maqueta (antes eran imágenes SVG).
+   House Slant en azul #11318E, mayúsculas y sombra gris suave.
+   Sin transform, para evitar fallos de pintado en Safari.
+   ========================================================================== */
+main.interna h1 {
+  font-family: 'HouseSlant-Regular', sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  -webkit-text-fill-color: #11318E;
+  color: #11318E;
+  -webkit-text-stroke: 0.02em #11318E;
+  text-shadow: 0 0.05em 0.08em rgba(0, 0, 0, 0.3);
+}
