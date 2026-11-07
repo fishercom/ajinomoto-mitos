@@ -85,6 +85,11 @@ input[type=number] {
 /* Titular del home: mismo estilo base, más contorno blanco grueso,
    sombra difusa y cápsula con borde gris (según la maqueta). */
 .home h1 {
+  /* En la maqueta la imagen del titular mide 70% del ancho, máximo ~380px
+     (main.home h1 img { width: 70%; max-width: 380px }). La cápsula mide
+     ~9.2em de ancho, así que este tamaño la deja en esas mismas medidas. */
+  font-size: min(7.6vw, 2.55rem);
+  line-height: 1;
   width: -moz-fit-content;
   width: fit-content;
   max-width: calc(100% - 2rem);
