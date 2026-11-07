@@ -59,7 +59,7 @@ input[type=number] {
 
 /* ==========================================================================
    Titular del home según la maqueta (antes era una imagen SVG).
-   Fuente House Slant en azul #11318E, contorno blanco grueso, sombra suave
+   Fuente House Slant en azul #003394, contorno blanco grueso, sombra suave
    y cápsula blanca con borde gris. Sin transform, para evitar fallos de
    pintado en Safari sobre el hero.
    ========================================================================== */
@@ -75,9 +75,9 @@ main.home h1 {
   background: #fff;
   -webkit-background-clip: border-box;
   background-clip: border-box;
-  -webkit-text-fill-color: #11318E;
-  color: #11318E;
-  -webkit-text-stroke: 0.02em #11318E;
+  -webkit-text-fill-color: #003394;
+  color: #003394;
+  -webkit-text-stroke: 0.02em #003394;
   /* Contorno blanco + sombra gris */
   text-shadow:
      0.07em  0      0 #fff,
@@ -102,7 +102,7 @@ main.home h1 {
 
 /* ==========================================================================
    Títulos de páginas internas según la maqueta (antes eran imágenes SVG).
-   House Slant en azul #11318E, mayúsculas y sombra gris suave.
+   House Slant en azul #003394 (color exacto de los SVG), mayúsculas y sombra gris suave.
    Sin transform, para evitar fallos de pintado en Safari.
    ========================================================================== */
 main.interna h1 {
@@ -113,8 +113,19 @@ main.interna h1 {
   background: none;
   -webkit-background-clip: border-box;
   background-clip: border-box;
-  -webkit-text-fill-color: #11318E;
-  color: #11318E;
-  -webkit-text-stroke: 0.02em #11318E;
-  text-shadow: 0 0.05em 0.08em rgba(0, 0, 0, 0.3);
+  -webkit-text-fill-color: #003394;
+  color: #003394;
+  -webkit-text-stroke: 0.02em #003394;
+  /* Sombra exacta de los SVG de la maqueta: feOffset dy=2, feGaussianBlur
+     stdDeviation=1, negro al 25% (a 56px de tamaño) */
+  text-shadow: 0 0.036em 0.036em rgba(0, 0, 0, 0.25);
+}
+
+/* Desde 768px la maqueta muestra el SVG a su tamaño natural
+   (resultado-de-busqueda.svg: 479x57), que equivale a 56px de fuente. */
+@media (min-width: 768px) {
+  main.interna h1 {
+    font-size: 3.5rem;
+    line-height: 1;
+  }
 }
