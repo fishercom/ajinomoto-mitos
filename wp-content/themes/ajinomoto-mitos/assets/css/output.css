@@ -637,8 +637,8 @@ video {
 @font-face {
   font-family: 'HouseSlant-Regular';
 
-  src: url(./HouseSlant-Regular.ttf) format('truetype'),
-         url(./HouseSlant-Regular.woff2) format('woff2');
+  src: url(./HouseSlant-Regular.woff2) format('woff2'),
+       url(./HouseSlant-Regular.ttf) format('truetype');
 }
 
 :root {
