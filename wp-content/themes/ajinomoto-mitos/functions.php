@@ -288,6 +288,82 @@ function ajinomoto_mitos_verificar_svg( $data, $file, $filename ) {
 }
 add_filter( 'wp_check_filetype_and_ext', 'ajinomoto_mitos_verificar_svg', 10, 3 );
 
+/**
+ * Un SVG puede llevar JavaScript que se ejecuta al abrir su URL directamente.
+ * Antes de guardarlo se limpia dejando solo elementos y atributos de dibujo;
+ * si no se puede leer como SVG, la subida se rechaza.
+ */
+function ajinomoto_mitos_limpiar_svg( $svg ) {
+    // DOCTYPE y entidades permiten XXE y "billion laughs".
+    if ( '' === trim( $svg ) || preg_match( '/<!DOCTYPE|<!ENTITY/i', $svg ) ) {
+        return false;
+    }
+
+    $elementos = array(
+        'svg', 'g', 'defs', 'symbol', 'use', 'title', 'desc', 'style',
+        'path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon',
+        'text', 'tspan', 'lineargradient', 'radialgradient', 'stop',
+        'clippath', 'mask', 'pattern', 'filter', 'fegaussianblur', 'feoffset',
+        'feblend', 'fecolormatrix', 'fecomposite', 'feflood', 'femerge', 'femergenode',
+    );
+
+    $doc      = new DOMDocument();
+    $previo   = libxml_use_internal_errors( true );
+    $cargado  = $doc->loadXML( $svg, LIBXML_NONET );
+    libxml_clear_errors();
+    libxml_use_internal_errors( $previo );
+
+    if ( ! $cargado || ! $doc->documentElement || 'svg' !== strtolower( $doc->documentElement->localName ) ) {
+        return false;
+    }
+
+    // Se recorre una copia porque se eliminan nodos durante el recorrido.
+    $nodos = iterator_to_array( $doc->getElementsByTagName( '*' ) );
+    foreach ( $nodos as $nodo ) {
+        if ( ! $nodo->parentNode ) {
+            continue;
+        }
+        if ( ! in_array( strtolower( $nodo->localName ), $elementos, true ) ) {
+            $nodo->parentNode->removeChild( $nodo );
+            continue;
+        }
+        if ( 'style' === strtolower( $nodo->localName ) && preg_match( '/@import|url\s*\(\s*[\'"]?\s*(?!#)|expression\s*\(/i', $nodo->textContent ) ) {
+            $nodo->parentNode->removeChild( $nodo );
+            continue;
+        }
+        foreach ( iterator_to_array( $nodo->attributes ) as $atributo ) {
+            $nombre = strtolower( $atributo->localName );
+            $valor  = trim( $atributo->value );
+            if ( 0 === strpos( $nombre, 'on' )
+                || ( 'href' === $nombre && 0 !== strpos( $valor, '#' ) )
+                || preg_match( '/javascript:|url\s*\(\s*[\'"]?\s*(?!#)|expression\s*\(/i', $valor ) ) {
+                $nodo->removeAttributeNode( $atributo );
+            }
+        }
+    }
+
+    // Quita instrucciones de procesamiento (xml-stylesheet) y comentarios fuera del <svg>.
+    foreach ( iterator_to_array( $doc->childNodes ) as $hijo ) {
+        if ( $hijo !== $doc->documentElement ) {
+            $doc->removeChild( $hijo );
+        }
+    }
+
+    return $doc->saveXML( $doc->documentElement );
+}
+
+function ajinomoto_mitos_sanitizar_svg_subido( $file ) {
+    if ( 'svg' !== strtolower( pathinfo( $file['name'], PATHINFO_EXTENSION ) ) ) {
+        return $file;
+    }
+    $limpio = ajinomoto_mitos_limpiar_svg( (string) file_get_contents( $file['tmp_name'] ) );
+    if ( false === $limpio || false === file_put_contents( $file['tmp_name'], $limpio ) ) {
+        $file['error'] = 'El archivo SVG no es válido o no se pudo limpiar.';
+    }
+    return $file;
+}
+add_filter( 'wp_handle_upload_prefilter', 'ajinomoto_mitos_sanitizar_svg_subido' );
+
 function ajinomoto_mitos_render_red_row( $index, $item = array() ) {
     $item     = wp_parse_args( $item, array( 'nombre' => '', 'url' => '', 'icono' => 0 ) );
     $name     = 'ajinomoto_mitos_redes[' . $index . ']';
