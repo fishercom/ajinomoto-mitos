@@ -56,3 +56,27 @@ input[type=number] {
   transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), width 0.6s cubic-bezier(0.25, 1, 0.5, 1), height 0.6s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
+
+/* ==========================================================================
+   Títulos de páginas internas (réplica en CSS de los títulos-imagen de la maqueta)
+   Fuente: House Slant (ya incluida en assets/css), azul sólido #11318E,
+   en mayúsculas, menos inclinada que la fuente original y con sombra suave.
+   ========================================================================== */
+.interna h1 {
+  font-family: 'HouseSlant-Regular', sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  /* Quitamos el degradado anterior y usamos el azul de la maqueta */
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  -webkit-text-fill-color: #11318E;
+  color: #11318E;
+  /* Un trazo fino del mismo color engrosa ligeramente la letra, como en la maqueta */
+  -webkit-text-stroke: 0.02em #11318E;
+  /* Sombra difusa gris por debajo */
+  text-shadow: 0 0.05em 0.08em rgba(0, 0, 0, 0.3);
+  /* La maqueta usa la fuente más erguida: compensamos parte de su inclinación */
+  transform: skewX(9deg);
+}
