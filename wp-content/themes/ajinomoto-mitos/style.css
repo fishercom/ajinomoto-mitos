@@ -58,10 +58,11 @@ input[type=number] {
 
 
 /* ==========================================================================
-   Títulos de páginas internas (réplica en CSS de los títulos-imagen de la maqueta)
+   Títulos del home y de páginas internas (réplica en CSS de los títulos-imagen de la maqueta)
    Fuente: House Slant (ya incluida en assets/css), azul sólido #11318E,
    en mayúsculas, menos inclinada que la fuente original y con sombra suave.
    ========================================================================== */
+.home h1,
 .interna h1 {
   font-family: 'HouseSlant-Regular', sans-serif;
   font-weight: 400;
